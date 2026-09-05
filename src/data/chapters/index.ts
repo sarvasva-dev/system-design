@@ -1,0 +1,59 @@
+import { Chapter } from '../../types';
+import { PART0_CHAPTER } from './part0_mindset';
+import { PART1_CHAPTER } from './part1_networking';
+import { PART2_CHAPTER } from './part2_backend';
+import { PART3_CHAPTER, PART4_CHAPTER } from './part3_databases';
+import { PART5_CHAPTER, PART6_CHAPTER } from './part5_caching';
+import { PART7_CHAPTER, PART8_CHAPTER } from './part7_storage';
+import { PART9_CHAPTER, PART10_CHAPTER } from './part9_containers_k8s';
+import { PART11_CHAPTER, PART12_CHAPTER } from './part11_iaas';
+import { PART13_CHAPTER, PART14_CHAPTER } from './part13_multitenant_db';
+import { PART15_CHAPTER, PART16_CHAPTER } from './part15_auth_identity';
+import { PART17_CHAPTER, PART18_CHAPTER } from './part17_security';
+import { PART19_CHAPTER } from './part19_performance_math';
+
+export const ALL_CHAPTERS: Chapter[] = [
+  PART0_CHAPTER,
+  PART1_CHAPTER,
+  PART2_CHAPTER,
+  PART3_CHAPTER,
+  PART4_CHAPTER,
+  PART5_CHAPTER,
+  PART6_CHAPTER,
+  PART7_CHAPTER,
+  PART8_CHAPTER,
+  PART9_CHAPTER,
+  PART10_CHAPTER,
+  PART11_CHAPTER,
+  PART12_CHAPTER,
+  PART13_CHAPTER,
+  PART14_CHAPTER,
+  PART15_CHAPTER,
+  PART16_CHAPTER,
+  PART17_CHAPTER,
+  PART18_CHAPTER,
+  PART19_CHAPTER,
+];
+
+export {
+  PART0_CHAPTER,
+  PART1_CHAPTER,
+  PART2_CHAPTER,
+  PART3_CHAPTER,
+  PART4_CHAPTER,
+  PART5_CHAPTER,
+  PART6_CHAPTER,
+  PART7_CHAPTER,
+  PART8_CHAPTER,
+  PART9_CHAPTER,
+  PART10_CHAPTER,
+  PART11_CHAPTER,
+  PART12_CHAPTER,
+  PART13_CHAPTER,
+  PART14_CHAPTER,
+  PART15_CHAPTER,
+  PART16_CHAPTER,
+  PART17_CHAPTER,
+  PART18_CHAPTER,
+  PART19_CHAPTER,
+};

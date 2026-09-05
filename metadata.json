@@ -1,0 +1,6 @@
+{
+  "name": "System Design for SaaS & IaaS",
+  "description": "A comprehensive reference textbook and interactive study guide covering SaaS multi-tenancy, IaaS cloud platforms, distributed systems, capacity planning, 20 real-world case studies, and 250 interview questions with verified sources.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
