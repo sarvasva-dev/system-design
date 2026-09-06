@@ -304,6 +304,37 @@ export const GateSmashersLecturesView: React.FC<GateSmashersLecturesViewProps> =
                   </button>
                 </div>
 
+                {/* Lecture Video Thumbnail Preview Banner */}
+                <div 
+                  onClick={() => setActiveEmbed(lec)}
+                  className="relative h-28 sm:h-32 w-full rounded-sm overflow-hidden bg-[#0a0b10] border border-[#232634] group/thumb cursor-pointer"
+                >
+                  <img
+                    src={`https://images.unsplash.com/photo-${
+                      lec.lectureNumber % 5 === 0 ? '1544197150-b99a580bb7a8' :
+                      lec.lectureNumber % 5 === 1 ? '1558494949-ef010cbdcc31' :
+                      lec.lectureNumber % 5 === 2 ? '1526374965328-7f61d4dc18c5' :
+                      lec.lectureNumber % 5 === 3 ? '1519389950473-47ba0277781c' :
+                      '1550751827-4bd374c3f58b'
+                    }?auto=format&fit=crop&w=600&q=80`}
+                    alt={lec.title}
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover opacity-40 group-hover/thumb:opacity-65 group-hover/thumb:scale-105 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-transparent to-black/30" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-9 w-9 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg group-hover/thumb:scale-110 group-hover/thumb:bg-red-500 transition-all">
+                      <Play className="h-4 w-4 fill-white ml-0.5" />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between text-[10px] font-mono text-white/90">
+                    <span className="bg-black/80 px-1.5 py-0.5 rounded-xs">Gate Smashers</span>
+                    <span className="bg-black/80 px-1.5 py-0.5 rounded-xs flex items-center gap-1">
+                      <Clock className="h-2.5 w-2.5" /> {lec.duration}
+                    </span>
+                  </div>
+                </div>
+
                 {/* Title */}
                 <h3 className="text-base font-medium text-[#ffffff] leading-snug">
                   {lec.title}

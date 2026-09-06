@@ -15,6 +15,8 @@ import { InteractiveQuizModal } from './components/InteractiveQuizModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { StudyExportModal } from './components/StudyExportModal';
 import { GateSmashersLecturesView } from './components/GateSmashersLecturesView';
+import { LiveResearchView } from './components/LiveResearchView';
+import { LiveResearchModal } from './components/LiveResearchModal';
 import { AppTheme } from './components/ThemeToggle';
 import { 
   BookOpen, 
@@ -22,11 +24,12 @@ import {
   Calculator, 
   HelpCircle, 
   CheckSquare,
-  Youtube 
+  Youtube,
+  ExternalLink 
 } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources'>('chapters');
+  const [activeTab, setActiveTab] = useState<'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources' | 'research'>('chapters');
   const [selectedChapterId, setSelectedChapterId] = useState<string>(ALL_CHAPTERS[0]?.id || 'part0-mindset');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -37,6 +40,8 @@ export default function App() {
   const [quizModalOpen, setQuizModalOpen] = useState<boolean>(false);
   const [shortcutsModalOpen, setShortcutsModalOpen] = useState<boolean>(false);
   const [exportModalOpen, setExportModalOpen] = useState<boolean>(false);
+  const [researchModalOpen, setResearchModalOpen] = useState<boolean>(false);
+  const [researchTopic, setResearchTopic] = useState<string>('');
 
   // Theme state: dark | light | blueprint
   const [theme, setTheme] = useState<AppTheme>(() => {
@@ -237,6 +242,10 @@ export default function App() {
         onOpenQuizModal={() => setQuizModalOpen(true)}
         onOpenShortcutsModal={() => setShortcutsModalOpen(true)}
         onOpenExportModal={() => setExportModalOpen(true)}
+        onOpenResearchModal={() => {
+          setResearchTopic('');
+          setResearchModalOpen(true);
+        }}
       />
 
       {/* Main Container */}
@@ -266,6 +275,15 @@ export default function App() {
               onToggleComplete={() => toggleChapterComplete(currentChapter.id)}
               onSelectNextChapter={handleSelectNextChapter}
               onOpenLecturesTab={() => setActiveTab('lectures')}
+              completedChapterIds={completedChapterIds}
+              onSelectChapter={(id) => {
+                setSelectedChapterId(id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onOpenResearch={(topic) => {
+                setResearchTopic(topic);
+                setResearchModalOpen(true);
+              }}
             />
           )}
 
@@ -282,9 +300,22 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'casestudies' && <CaseStudyView />}
+          {activeTab === 'casestudies' && (
+            <CaseStudyView 
+              onOpenResearch={(topic) => {
+                setResearchTopic(topic);
+                setResearchModalOpen(true);
+              }} 
+            />
+          )}
 
           {activeTab === 'calculator' && <CapacityCalculator />}
+
+          {activeTab === 'research' && (
+            <LiveResearchView 
+              initialTopic={researchTopic} 
+            />
+          )}
 
           {activeTab === 'glossary' && <GlossaryView />}
 
@@ -370,13 +401,23 @@ export default function App() {
           <span className="text-[#475569]">&bull; Theme: {theme}</span>
         </div>
         <div className="flex items-center gap-4">
+          <a
+            href="https://sarthakml.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-[#161824] border border-[#2d3142] hover:border-[#d4af37] text-xs normal-case font-mono text-[#cbd5e1] hover:text-[#ffffff] transition-colors group cursor-pointer"
+          >
+            <span className="text-[#94a3b8] group-hover:text-[#d4af37] transition-colors">Made by</span>
+            <strong className="text-[#d4af37] font-semibold">sarthakml.in</strong>
+            <ExternalLink className="h-3 w-3 text-[#d4af37] opacity-80 group-hover:opacity-100" />
+          </a>
+          <span className="text-[#475569]">&bull;</span>
           <button 
             onClick={() => setShortcutsModalOpen(true)}
             className="text-[#94a3b8] hover:text-[#d4af37] transition-colors cursor-pointer"
           >
             Hotkeys (?)
           </button>
-          <span>&copy; 2026 System Design Reference Guide</span>
         </div>
         <div>Verified Standards &bull; RFC 9110 / CAP / Raft</div>
       </footer>
@@ -417,6 +458,13 @@ export default function App() {
       <KeyboardShortcutsModal
         isOpen={shortcutsModalOpen}
         onClose={() => setShortcutsModalOpen(false)}
+      />
+
+      {/* Live AI Search Grounding Modal */}
+      <LiveResearchModal
+        isOpen={researchModalOpen}
+        onClose={() => setResearchModalOpen(false)}
+        initialTopic={researchTopic}
       />
 
       {/* Study Plan & Syllabus Export Modal */}

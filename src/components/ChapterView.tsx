@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Chapter } from '../types';
 import { GATE_SMASHERS_LECTURES, GATE_SMASHERS_PLAYLIST_URL } from '../data/gate_smashers_videos';
+import { CHAPTER_IMAGES } from '../data/chapter_images';
+import { ChapterDiagramDispatcher } from './diagrams/ChapterDiagramDispatcher';
+import { ConceptArchitectureVisualizer } from './diagrams/ConceptArchitectureVisualizer';
+import { SyllabusRoadmapBar } from './SyllabusRoadmapBar';
+import { FlowAnimator } from './FlowAnimator';
 import { 
   CheckCircle2, 
   Circle, 
@@ -23,7 +28,8 @@ import {
   Search,
   Sparkles,
   Youtube,
-  Clock
+  Clock,
+  Layers
 } from 'lucide-react';
 
 interface ChapterViewProps {
@@ -32,6 +38,9 @@ interface ChapterViewProps {
   onToggleComplete: () => void;
   onSelectNextChapter?: () => void;
   onOpenLecturesTab?: () => void;
+  completedChapterIds?: Set<string> ;
+  onSelectChapter?: (chapterId: string) => void;
+  onOpenResearch?: (topic: string) => void;
 }
 
 export const ChapterView: React.FC<ChapterViewProps> = ({
@@ -39,11 +48,17 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
   isCompleted,
   onToggleComplete,
   onSelectNextChapter,
-  onOpenLecturesTab
+  onOpenLecturesTab,
+  completedChapterIds = new Set<string>(),
+  onSelectChapter,
+  onOpenResearch
 }) => {
   const [activeConceptIndex, setActiveConceptIndex] = useState(0);
   const [copiedDiagram, setCopiedDiagram] = useState(false);
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
+  const [diagramMode, setDiagramMode] = useState<'visual' | 'animated' | 'ascii'>('visual');
+
+  const visualAsset = CHAPTER_IMAGES[chapter.id];
 
   const toggleAnswer = (id: string) => {
     setRevealedAnswers(prev => ({ ...prev, [id]: !prev[id] }));
@@ -67,33 +82,99 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 sm:space-y-10 pb-24">
+      {/* Visual Syllabus Progress Tracker & Roadmap Bar */}
+      <SyllabusRoadmapBar
+        currentChapter={chapter}
+        completedChapterIds={completedChapterIds}
+        onToggleComplete={onToggleComplete}
+        onSelectChapter={onSelectChapter}
+        onSelectNextChapter={onSelectNextChapter}
+      />
+
+      {/* Chapter Thematic Architecture Photography & Hardware Context */}
+      {visualAsset && (
+        <div className="relative rounded-md border border-[#232634] bg-[#0e0f14] overflow-hidden shadow-xl group">
+          <div className="relative h-44 sm:h-56 md:h-64 w-full overflow-hidden bg-[#07080c]">
+            <img
+              src={visualAsset.bannerUrl}
+              alt={chapter.title}
+              referrerPolicy="no-referrer"
+              className="h-full w-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-75 transition-all duration-700 ease-out"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/50 to-transparent" />
+            
+            {/* Top architectural component pills */}
+            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex flex-wrap gap-1.5 z-10">
+              {visualAsset.architecturalElements.map((elem, idx) => (
+                <span
+                  key={idx}
+                  className="rounded-xs bg-[#0b0c10]/85 backdrop-blur-md border border-[#2d3142] px-2.5 py-0.5 text-[9px] sm:text-[10px] font-mono text-[#cbd5e1] shadow-xs"
+                >
+                  {elem}
+                </span>
+              ))}
+            </div>
+
+            {/* Bottom caption bar */}
+            <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+              <p className="text-xs sm:text-sm text-[#e2e8f0] max-w-2xl font-sans drop-shadow-md">
+                <span className="font-semibold text-[#d4af37]">Physical Domain Infrastructure: </span>
+                {visualAsset.caption}
+              </p>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setDiagramMode('animated')}
+                  className="inline-flex items-center gap-1.5 text-[10px] uppercase font-mono font-semibold text-[#38bdf8] bg-[#0b0c10]/90 hover:bg-[#161c2c] border border-[#38bdf8]/40 hover:border-[#38bdf8] px-2.5 py-1 rounded-xs transition-all cursor-pointer shadow-xs"
+                >
+                  <Sparkles className="h-3 w-3 text-[#38bdf8]" />
+                  <span>Simulate Flow</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Chapter Title & Header */}
       <section className="rounded-md border border-[#232634] bg-[#12141c] p-5 sm:p-8 lg:p-10 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="inline-flex items-center gap-2 rounded-xs bg-[#191b26] border border-[#2d3142] px-3.5 py-1 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] w-fit">
             {chapter.partTitle}
           </div>
-          <button
-            id="btn-mark-chapter-complete"
-            onClick={onToggleComplete}
-            className={`inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-xs uppercase tracking-[0.14em] font-semibold transition-all cursor-pointer min-h-[44px] ${
-              isCompleted
-                ? 'bg-[#152e1d] text-[#4ade80] border border-[#22c55e]/40 shadow-xs'
-                : 'border border-[#2d3142] bg-[#171a25] text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#ffffff]'
-            }`}
-          >
-            {isCompleted ? (
-              <>
-                <CheckCircle2 className="h-4 w-4 text-[#4ade80]" />
-                Completed Module
-              </>
-            ) : (
-              <>
-                <Circle className="h-4 w-4 text-[#94a3b8]" />
-                Mark as Completed
-              </>
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenResearch && (
+              <button
+                id="btn-chapter-live-research"
+                onClick={() => onOpenResearch(`${chapter.title}: real-world architecture, benchmarks, and production trade-offs`)}
+                className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-[#2d3142] bg-[#171a25] px-3.5 py-2 text-xs uppercase tracking-[0.12em] font-medium text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#d4af37] transition-all cursor-pointer min-h-[44px]"
+                title="Search real-time Google Search data, benchmarks & incidents for this chapter"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
+                <span>Live Web Benchmarks</span>
+              </button>
             )}
-          </button>
+            <button
+              id="btn-mark-chapter-complete"
+              onClick={onToggleComplete}
+              className={`inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-xs uppercase tracking-[0.14em] font-semibold transition-all cursor-pointer min-h-[44px] ${
+                isCompleted
+                  ? 'bg-[#152e1d] text-[#4ade80] border border-[#22c55e]/40 shadow-xs'
+                  : 'border border-[#2d3142] bg-[#171a25] text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#ffffff]'
+              }`}
+            >
+              {isCompleted ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4 text-[#4ade80]" />
+                  Completed Module
+                </>
+              ) : (
+                <>
+                  <Circle className="h-4 w-4 text-[#94a3b8]" />
+                  Mark as Completed
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         <h1 className="mt-5 text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-serif font-medium text-[#ffffff] tracking-tight leading-tight">
@@ -142,34 +223,90 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
         </div>
       </section>
 
-      {/* ASCII Architectural Blueprint */}
-      {chapter.diagramAscii && (
-        <section className="rounded-md border border-[#232634] bg-[#090a0f] p-4 sm:p-6 lg:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1f2230] pb-4 mb-4 gap-3">
-            <div className="flex items-center gap-2.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
-              <Terminal className="h-4 w-4 text-[#d4af37]" />
-              <span>System Architectural Blueprint</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-[10px] text-[#64748b] sm:hidden">
-                <MoveHorizontal className="h-3 w-3" /> Scrollable
-              </span>
+      {/* System Architecture Topology: Visual Interactive Map & ASCII Blueprint */}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] flex items-center gap-1.5">
+              <Layers className="h-3.5 w-3.5 text-[#d4af37]" />
+              Topology Architecture View:
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 p-1 rounded-sm bg-[#12141c] border border-[#232634]">
               <button
-                onClick={copyDiagramToClipboard}
-                className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-[#2d3142] bg-[#141620] px-3 py-2 text-xs uppercase tracking-[0.14em] font-medium text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#fff] transition-colors cursor-pointer min-h-[38px]"
+                onClick={() => setDiagramMode('visual')}
+                className={`px-3 py-1 rounded-xs text-xs font-medium transition-all cursor-pointer ${
+                  diagramMode === 'visual'
+                    ? 'bg-[#d4af37] text-[#0b0c10] font-semibold shadow-xs'
+                    : 'text-[#94a3b8] hover:text-[#ffffff]'
+                }`}
               >
-                {copiedDiagram ? <Check className="h-3.5 w-3.5 text-[#22c55e]" /> : <Copy className="h-3.5 w-3.5" />}
-                {copiedDiagram ? 'Copied' : 'Copy Blueprint'}
+                Interactive Topology Map
+              </button>
+              <button
+                onClick={() => setDiagramMode('animated')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-xs text-xs font-medium transition-all cursor-pointer ${
+                  diagramMode === 'animated'
+                    ? 'bg-[#d4af37] text-[#0b0c10] font-semibold shadow-xs'
+                    : 'text-[#94a3b8] hover:text-[#ffffff]'
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] animate-ping" />
+                <span>Live Flow Simulator</span>
+              </button>
+              <button
+                onClick={() => setDiagramMode('ascii')}
+                className={`px-3 py-1 rounded-xs text-xs font-medium transition-all cursor-pointer ${
+                  diagramMode === 'ascii'
+                    ? 'bg-[#d4af37] text-[#0b0c10] font-semibold shadow-xs'
+                    : 'text-[#94a3b8] hover:text-[#ffffff]'
+                }`}
+              >
+                ASCII Blueprint
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto p-2 bg-[#050608] rounded-sm border border-[#1a1c27]">
-            <pre className="font-mono text-[11px] sm:text-xs md:text-[13px] leading-relaxed text-[#d4af37] whitespace-pre min-w-[500px]">
-              {chapter.diagramAscii.trim()}
-            </pre>
-          </div>
-        </section>
-      )}
+        </div>
+
+        {diagramMode === 'visual' ? (
+          <ChapterDiagramDispatcher chapter={chapter} />
+        ) : diagramMode === 'animated' ? (
+          <FlowAnimator
+            chapterVisualUrl={visualAsset?.bannerUrl}
+            chapterTitle={chapter.title}
+          />
+        ) : (
+          chapter.diagramAscii && (
+            <div className="rounded-md border border-[#232634] bg-[#090a0f] p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1f2230] pb-4 mb-4 gap-3">
+                <div className="flex items-center gap-2.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
+                  <Terminal className="h-4 w-4 text-[#d4af37]" />
+                  <span>System Architectural Blueprint (ASCII Specification)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 text-[10px] text-[#64748b] sm:hidden">
+                    <MoveHorizontal className="h-3 w-3" /> Scrollable
+                  </span>
+                  <button
+                    onClick={copyDiagramToClipboard}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-[#2d3142] bg-[#141620] px-3 py-2 text-xs uppercase tracking-[0.14em] font-medium text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#fff] transition-colors cursor-pointer min-h-[38px]"
+                  >
+                    {copiedDiagram ? <Check className="h-3.5 w-3.5 text-[#22c55e]" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copiedDiagram ? 'Copied' : 'Copy Blueprint'}
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto p-2 bg-[#050608] rounded-sm border border-[#1a1c27]">
+                <pre className="font-mono text-[11px] sm:text-xs md:text-[13px] leading-relaxed text-[#d4af37] whitespace-pre min-w-[500px]">
+                  {chapter.diagramAscii.trim()}
+                </pre>
+              </div>
+            </div>
+          )
+        )}
+      </section>
 
       {/* Core Architectural Concepts */}
       <section className="rounded-md border border-[#232634] bg-[#12141c] p-4 sm:p-8 lg:p-10 space-y-8">
@@ -270,6 +407,13 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
                 "{currentConcept.analogy}"
               </p>
             </div>
+
+            {/* Programmatic Technical Architecture Diagram (SVG + CSS Grid) */}
+            <ConceptArchitectureVisualizer
+              title={currentConcept.title}
+              technicalExplanation={currentConcept.technicalExplanation}
+              simpleDefinition={currentConcept.simpleDefinition}
+            />
 
             {/* Deep Technical Explanation */}
             <div className="rounded-sm border border-[#232634] bg-[#141620] p-5 sm:p-6">

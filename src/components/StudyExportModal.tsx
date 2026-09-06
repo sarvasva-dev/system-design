@@ -49,7 +49,7 @@ ${completedList.length > 0
   : '- _No chapters completed yet._ Click "Mark Read" on chapters as you study!'}
 
 ---
-*Reference Curriculum: System Design for SaaS & IaaS Architecture Reference Guide*
+*Reference Curriculum: System Design for SaaS & IaaS Architecture Reference Guide (Made by [sarthakml.in](https://sarthakml.in))*
 `;
   };
 

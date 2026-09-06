@@ -17,13 +17,14 @@ import {
   Award,
   Keyboard,
   Download,
-  Youtube
+  Youtube,
+  ExternalLink
 } from 'lucide-react';
 import { ThemeToggle, AppTheme } from './ThemeToggle';
 
 interface HeaderProps {
-  activeTab: 'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources';
-  setActiveTab: (tab: 'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources') => void;
+  activeTab: 'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources' | 'research';
+  setActiveTab: (tab: 'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources' | 'research') => void;
   toggleSidebar: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -37,6 +38,7 @@ interface HeaderProps {
   onOpenQuizModal?: () => void;
   onOpenShortcutsModal?: () => void;
   onOpenExportModal?: () => void;
+  onOpenResearchModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -54,7 +56,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSeoModal,
   onOpenQuizModal,
   onOpenShortcutsModal,
-  onOpenExportModal
+  onOpenExportModal,
+  onOpenResearchModal
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
@@ -64,6 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'lectures', label: 'Gate Smashers', icon: Youtube, desc: '33 Video Lectures by Varun Sir' },
     { id: 'casestudies', label: 'Case Studies', icon: Layers, desc: 'Notion, AWS Nitro & Stripe' },
     { id: 'calculator', label: 'Capacity Math', icon: Calculator, desc: "Little's & Amdahl's Law" },
+    { id: 'research', label: 'AI Research', icon: Sparkles, desc: 'Google Search Grounding' },
     { id: 'glossary', label: 'Glossary', icon: HelpCircle, desc: 'Core Mental Models' },
     { id: 'checklist', label: 'Rubric', icon: CheckSquare, desc: 'Staff 5-Step Playbook' },
     { id: 'sources', label: 'Primary RFCs', icon: FileText, desc: 'RFCs & Seminal Papers' },
@@ -106,6 +110,17 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="hidden md:inline-block rounded-xs bg-[#191b26] border border-[#2d3142] px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] font-semibold text-[#d4af37]">
                   Staff Edition
                 </span>
+                <a
+                  href="https://sarthakml.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="hidden xl:inline-flex items-center gap-1 rounded-xs bg-[#1a1711] border border-[#d4af37]/40 px-2 py-0.5 text-[9px] font-mono font-medium text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0b0c10] transition-colors"
+                  title="Curated and engineered by sarthakml.in"
+                >
+                  <span>by sarthakml.in</span>
+                  <ExternalLink className="h-2.5 w-2.5" />
+                </a>
               </div>
             </div>
           </div>
@@ -192,6 +207,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Globe className="h-3.5 w-3.5 text-[#38bdf8]" />
               <span className="hidden 2xl:inline">SEO Preview</span>
+            </button>
+          )}
+
+          {/* Live AI Search Grounding Button */}
+          {onOpenResearchModal && (
+            <button
+              id="btn-header-research"
+              onClick={onOpenResearchModal}
+              title="Live Search Grounding & Architectural Benchmarks (Google Search Tool)"
+              className="hidden lg:inline-flex items-center gap-1.5 rounded-sm border border-[#272a38] bg-[#14161f] px-2.5 py-1.5 text-xs font-medium text-[#d4af37] hover:border-[#d4af37] hover:bg-[#1f1d14] transition-all cursor-pointer min-h-[36px]"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
+              <span className="hidden 2xl:inline">Live Research</span>
             </button>
           )}
 
@@ -360,6 +388,29 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
+            {/* Mobile Live AI Research Option */}
+            {onOpenResearchModal && (
+              <button
+                id="btn-mobile-research"
+                onClick={() => {
+                  onOpenResearchModal();
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center justify-between p-3.5 rounded-sm border border-[#2d3142] bg-[#151824] text-[#cbd5e1] hover:border-[#d4af37] text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-sm border border-[#d4af37]/40 bg-[#1c1910] text-[#d4af37]">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-serif text-base font-medium text-[#ffffff]">Live AI Research Engine</div>
+                    <div className="text-[11px] text-[#94a3b8]">Google Search Grounding &bull; Gemini 3.5 Flash</div>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-[#d4af37]" />
+              </button>
+            )}
+
             {/* Mobile SEO Website Preview Option */}
             {onOpenSeoModal && (
               <button
@@ -440,7 +491,19 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-[#232634] px-2 text-center">
+          <div className="mt-6 pt-4 border-t border-[#232634] px-2 text-center space-y-2">
+            <div>
+              <a
+                href="https://sarthakml.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-[#161824] border border-[#2d3142] hover:border-[#d4af37] text-xs font-mono text-[#cbd5e1] hover:text-[#ffffff] transition-colors"
+              >
+                <span className="text-[#94a3b8]">Made by</span>
+                <strong className="text-[#d4af37] font-semibold">sarthakml.in</strong>
+                <ExternalLink className="h-3 w-3 text-[#d4af37]" />
+              </a>
+            </div>
             <p className="text-[11px] uppercase tracking-[0.18em] text-[#64748b]">
               System Design &bull; Staff Engineer Reference
             </p>

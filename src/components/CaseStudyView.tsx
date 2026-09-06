@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CASE_STUDIES } from '../data/case_studies';
+import { CASE_STUDY_IMAGES } from '../data/chapter_images';
 import { 
   Layers, 
   Terminal, 
@@ -9,10 +10,15 @@ import {
   MessageSquare,
   Copy,
   Check,
-  MoveHorizontal
+  MoveHorizontal,
+  Sparkles
 } from 'lucide-react';
 
-export const CaseStudyView: React.FC = () => {
+interface CaseStudyViewProps {
+  onOpenResearch?: (topic: string) => void;
+}
+
+export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ onOpenResearch }) => {
   const [selectedCaseIndex, setSelectedCaseIndex] = useState(0);
   const [copiedBlueprint, setCopiedBlueprint] = useState(false);
 
@@ -58,19 +64,67 @@ export const CaseStudyView: React.FC = () => {
         </div>
       </div>
 
+      {/* Case Thematic Banner */}
+      {(() => {
+        const csVisual = CASE_STUDY_IMAGES[cs.id] || {
+          bannerUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
+          logoUrl: '',
+          topologySummary: 'High-availability multi-region cloud topology with active-active service mesh and distributed persistence.'
+        };
+        return (
+          <div className="relative rounded-md border border-[#232634] overflow-hidden group shadow-lg">
+            <div className="relative h-40 sm:h-52 md:h-60 w-full overflow-hidden bg-[#0a0b0f]">
+              <img
+                src={csVisual.bannerUrl}
+                alt={cs.title}
+                referrerPolicy="no-referrer"
+                className="h-full w-full object-cover opacity-50 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0e0f16] via-[#0e0f16]/60 to-transparent" />
+              <div className="absolute top-3 left-4 z-10">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-[#d4af37] bg-[#0b0c10]/85 backdrop-blur-md px-2.5 py-1 rounded-xs border border-[#2d3142]">
+                  Case #{cs.number} &bull; Architectural Blueprint
+                </span>
+              </div>
+              <div className="absolute bottom-3 sm:bottom-4 left-4 right-4 z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                <div>
+                  <p className="text-xs sm:text-sm text-[#e2e8f0] font-sans max-w-2xl drop-shadow-md">
+                    <span className="font-semibold text-[#d4af37]">Production Topology: </span>
+                    {csVisual.topologySummary}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Case Details */}
       <div className="rounded-md border border-[#232634] bg-[#12141c] p-5 sm:p-8 lg:p-10 space-y-8">
-        <div>
-          <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
-            System Design Specification #{cs.number}
-          </span>
-          <h2 className="mt-2 text-xl sm:text-2xl lg:text-3xl font-serif font-medium text-[#ffffff]">
-            {cs.title}
-          </h2>
-          <p className="mt-3 text-xs sm:text-sm lg:text-base text-[#cbd5e1] leading-relaxed">
-            {cs.problem}
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
+              System Design Specification #{cs.number}
+            </span>
+            <h2 className="mt-2 text-xl sm:text-2xl lg:text-3xl font-serif font-medium text-[#ffffff]">
+              {cs.title}
+            </h2>
+          </div>
+          {onOpenResearch && (
+            <button
+              id="btn-casestudy-research"
+              onClick={() => onOpenResearch(`${cs.title}: high-scale production architecture, failure modes, and recent engineering updates`)}
+              className="inline-flex items-center gap-1.5 self-start rounded-sm border border-[#2d3142] bg-[#171a25] px-3.5 py-2 text-xs uppercase tracking-[0.12em] font-medium text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#d4af37] transition-all cursor-pointer"
+              title="Search real-time Google Search data & engineering post-mortems for this system"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
+              <span>Grounded Web Research</span>
+            </button>
+          )}
         </div>
+        <p className="text-xs sm:text-sm lg:text-base text-[#cbd5e1] leading-relaxed">
+          {cs.problem}
+        </p>
 
         {/* Requirements */}
         <div className="grid gap-4 sm:grid-cols-2">

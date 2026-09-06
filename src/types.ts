@@ -150,12 +150,23 @@ export interface InterviewQuestionItem {
   followUpQuestions: string[];
 }
 
+export interface GlossaryInterviewQuestion {
+  question: string;
+  companies: string[];
+  level: string; // e.g. 'L4 (Mid)', 'L5 (Senior)', 'L6+ (Staff)'
+  detailedAnswer: string;
+  keyPoints: string[];
+  interviewerFollowUp?: string;
+  followUpAnswer?: string;
+}
+
 export interface GlossaryTerm {
   term: string;
   category: string;
   simpleMeaning: string;
   technicalMeaning: string;
   example: string;
+  interviewQuestions?: GlossaryInterviewQuestion[];
 }
 
 export interface ArchitectureChecklistItem {
