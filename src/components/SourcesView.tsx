@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GLOBAL_VERIFIED_SOURCES } from '../data/verified_sources';
-import { FileText, ExternalLink, Search, Filter } from 'lucide-react';
+import { FileText, ExternalLink, Search } from 'lucide-react';
 
 export const SourcesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,39 +16,39 @@ export const SourcesView: React.FC = () => {
   });
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10 pb-20">
+    <div className="mx-auto max-w-5xl space-y-8 sm:space-y-10 pb-24">
       {/* Header */}
-      <div className="rounded-sm border border-[#222] bg-[#111] p-8 sm:p-10">
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
+      <div className="rounded-md border border-[#232634] bg-[#12141c] p-5 sm:p-8 lg:p-10 shadow-lg">
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
           <FileText className="h-4 w-4" />
           Authoritative Primary Sources
         </div>
-        <h1 className="mt-4 text-3xl sm:text-4xl font-serif text-[#fff]">
+        <h1 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-serif font-medium text-[#ffffff]">
           RFC Standards, Research Papers &amp; Specifications
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-[#888] font-light leading-relaxed">
-          The foundational documents underpinning modern distributed systems, protocols, database internals, and internet infrastructure.
+        <p className="mt-2 text-xs sm:text-sm lg:text-base text-[#94a3b8] font-normal leading-relaxed">
+          The foundational documents underpinning modern distributed systems, protocols, database internals, and cloud infrastructure.
         </p>
 
         {/* Filter controls */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-4">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#555]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748b]" />
             <input
               type="text"
               placeholder="Search RFCs, papers, or technologies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-sm border border-[#222] bg-[#0c0c0c] py-2.5 pl-10 pr-4 text-xs sm:text-sm text-[#fff] placeholder:text-[#555] focus:border-[#c5a059] focus:outline-none"
+              className="w-full rounded-sm border border-[#272a38] bg-[#161824] py-2.5 pl-10 pr-4 text-xs sm:text-sm text-[#ffffff] placeholder:text-[#64748b] focus:border-[#d4af37] focus:outline-none min-h-[44px]"
             />
           </div>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="rounded-sm border border-[#222] bg-[#0c0c0c] px-4 py-2.5 text-xs text-[#ccc] focus:border-[#c5a059] focus:outline-none cursor-pointer"
+            className="rounded-sm border border-[#272a38] bg-[#161824] px-4 py-2.5 text-xs text-[#cbd5e1] focus:border-[#d4af37] focus:outline-none cursor-pointer min-h-[44px]"
           >
             {types.map(t => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t} className="bg-[#12141c] text-[#ffffff]">{t}</option>
             ))}
           </select>
         </div>
@@ -56,7 +56,7 @@ export const SourcesView: React.FC = () => {
 
       {/* Sources Grid */}
       <div className="space-y-4">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-[#666] font-semibold">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-[#94a3b8] font-semibold">
           Showing {filteredSources.length} Primary Documents
         </div>
 
@@ -67,26 +67,26 @@ export const SourcesView: React.FC = () => {
               href={src.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-sm border border-[#222] bg-[#111] p-6 space-y-3 transition-all hover:border-[#c5a059] group flex flex-col justify-between"
+              className="rounded-md border border-[#232634] bg-[#12141c] p-5 sm:p-6 space-y-3 transition-all hover:border-[#d4af37]/60 group flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded-xs bg-[#181818] border border-[#2a2a2a] px-2 py-0.5 text-[9px] uppercase tracking-[0.15em] font-semibold text-[#c5a059]">
+                  <span className="rounded-xs bg-[#191b26] border border-[#2d3142] px-2 py-0.5 text-[9px] uppercase tracking-[0.16em] font-semibold text-[#d4af37]">
                     {src.type}
                   </span>
-                  <ExternalLink className="h-3.5 w-3.5 text-[#555] group-hover:text-[#c5a059] transition-colors" />
+                  <ExternalLink className="h-4 w-4 text-[#64748b] group-hover:text-[#d4af37] transition-colors" />
                 </div>
-                <h2 className="mt-3 text-base sm:text-lg font-serif text-[#fff] group-hover:text-[#c5a059] transition-colors">
+                <h2 className="mt-3 text-base sm:text-lg font-serif font-medium text-[#ffffff] group-hover:text-[#d4af37] transition-colors">
                   {src.title}
                 </h2>
-                <p className="mt-2 text-xs sm:text-sm text-[#aaa] leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#94a3b8] leading-relaxed">
                   {src.whatItSupports}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-[#1a1a1a] flex items-center justify-between text-[10px] text-[#555] font-mono">
-                <span className="truncate max-w-[240px]">{src.url}</span>
-                <span className="text-[#c5a059] group-hover:underline">Open Spec &rarr;</span>
+              <div className="pt-3 border-t border-[#1f2230] flex items-center justify-between text-[11px] text-[#64748b] font-mono">
+                <span className="truncate max-w-[200px] sm:max-w-[240px]">{src.url}</span>
+                <span className="text-[#d4af37] group-hover:underline font-sans font-semibold">Read &rarr;</span>
               </div>
             </a>
           ))}

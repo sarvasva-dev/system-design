@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Chapter } from '../types';
+import { GATE_SMASHERS_LECTURES, GATE_SMASHERS_PLAYLIST_URL } from '../data/gate_smashers_videos';
 import { 
   CheckCircle2, 
   Circle, 
@@ -17,7 +18,12 @@ import {
   Terminal,
   ArrowRight,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  MoveHorizontal,
+  Search,
+  Sparkles,
+  Youtube,
+  Clock
 } from 'lucide-react';
 
 interface ChapterViewProps {
@@ -25,13 +31,15 @@ interface ChapterViewProps {
   isCompleted: boolean;
   onToggleComplete: () => void;
   onSelectNextChapter?: () => void;
+  onOpenLecturesTab?: () => void;
 }
 
 export const ChapterView: React.FC<ChapterViewProps> = ({
   chapter,
   isCompleted,
   onToggleComplete,
-  onSelectNextChapter
+  onSelectNextChapter,
+  onOpenLecturesTab
 }) => {
   const [activeConceptIndex, setActiveConceptIndex] = useState(0);
   const [copiedDiagram, setCopiedDiagram] = useState(false);
@@ -51,21 +59,27 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
   const currentConcept = chapter.concepts[activeConceptIndex] || chapter.concepts[0];
 
+  const matchingLectures = GATE_SMASHERS_LECTURES.filter(
+    lec => lec.associatedChapterId === chapter.id || 
+           lec.associatedChapterTitle.toLowerCase().includes(`part ${chapter.part}:`) ||
+           lec.associatedChapterTitle.toLowerCase().includes(`part ${chapter.part} `)
+  );
+
   return (
-    <div className="mx-auto max-w-5xl space-y-10 pb-20">
+    <div className="mx-auto max-w-5xl space-y-8 sm:space-y-10 pb-24">
       {/* Chapter Title & Header */}
-      <section className="rounded-sm border border-[#222] bg-[#111] p-8 sm:p-10 shadow-lg">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-2 rounded-xs bg-[#181818] border border-[#2a2a2a] px-3.5 py-1 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
+      <section className="rounded-md border border-[#232634] bg-[#12141c] p-5 sm:p-8 lg:p-10 shadow-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="inline-flex items-center gap-2 rounded-xs bg-[#191b26] border border-[#2d3142] px-3.5 py-1 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] w-fit">
             {chapter.partTitle}
           </div>
           <button
             id="btn-mark-chapter-complete"
             onClick={onToggleComplete}
-            className={`inline-flex items-center gap-2 rounded-sm px-4 py-2 text-[11px] uppercase tracking-[0.15em] font-medium transition-all cursor-pointer ${
+            className={`inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-xs uppercase tracking-[0.14em] font-semibold transition-all cursor-pointer min-h-[44px] ${
               isCompleted
-                ? 'bg-[#1a2e1e] text-[#4ade80] border border-[#2e5936]'
-                : 'border border-[#333] text-[#aaa] hover:border-[#c5a059] hover:text-[#fff]'
+                ? 'bg-[#152e1d] text-[#4ade80] border border-[#22c55e]/40 shadow-xs'
+                : 'border border-[#2d3142] bg-[#171a25] text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#ffffff]'
             }`}
           >
             {isCompleted ? (
@@ -75,49 +89,82 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               </>
             ) : (
               <>
-                <Circle className="h-4 w-4 text-[#666]" />
+                <Circle className="h-4 w-4 text-[#94a3b8]" />
                 Mark as Completed
               </>
             )}
           </button>
         </div>
 
-        <h1 className="mt-6 text-3xl sm:text-4xl lg:text-5xl font-serif text-[#fff] tracking-tight">
+        <h1 className="mt-5 text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-serif font-medium text-[#ffffff] tracking-tight leading-tight">
           {chapter.title}
         </h1>
-        <p className="mt-2 text-base sm:text-lg text-[#888] font-light leading-relaxed">
+        <p className="mt-3 text-sm sm:text-base lg:text-lg text-[#94a3b8] font-normal leading-relaxed">
           {chapter.subtitle}
         </p>
 
-        {/* Executive summary block */}
-        <div className="mt-6 relative border-l-2 border-[#c5a059] bg-[#0c0c0c] p-5 pl-6">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-[#c5a059] font-semibold mb-1">
+        {/* Executive summary brief */}
+        <div className="mt-6 relative border-l-2 border-[#d4af37] bg-[#171a26] p-4 sm:p-6 rounded-r-sm">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-semibold mb-1.5">
             Executive Architecture Brief
           </div>
-          <p className="text-sm text-[#ccc] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#e2e8f0] leading-relaxed">
             {chapter.summary}
           </p>
+        </div>
+
+        {/* Color Awareness & Double-Tap Explainer System Bar */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2.5 rounded-sm border border-[#232634] bg-[#141620] px-3.5 py-2.5 text-[11px] text-[#94a3b8]">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#d4af37] flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
+              Color Awareness:
+            </span>
+            <span className="flex items-center gap-1.5 text-[#e2e8f0]">
+              <span className="h-2 w-2 rounded-full bg-[#d4af37]"></span> Core Laws
+            </span>
+            <span className="flex items-center gap-1.5 text-[#4ade80]">
+              <span className="h-2 w-2 rounded-full bg-[#22c55e]"></span> SLA Guarantees
+            </span>
+            <span className="flex items-center gap-1.5 text-[#f87171]">
+              <span className="h-2 w-2 rounded-full bg-[#ef4444]"></span> Anti-Patterns
+            </span>
+            <span className="flex items-center gap-1.5 text-[#38bdf8]">
+              <span className="h-2 w-2 rounded-full bg-[#38bdf8]"></span> Network / Edge
+            </span>
+            <span className="flex items-center gap-1.5 text-[#c084fc]">
+              <span className="h-2 w-2 rounded-full bg-[#c084fc]"></span> Consensus
+            </span>
+          </div>
+          <div className="text-[10px] text-[#cbd5e1] font-mono bg-[#0b0c10] px-2 py-1 rounded-xs border border-[#1f2230]">
+            💡 Double-tap any term to search Google
+          </div>
         </div>
       </section>
 
       {/* ASCII Architectural Blueprint */}
       {chapter.diagramAscii && (
-        <section className="rounded-sm border border-[#222] bg-[#050505] p-6 sm:p-8 text-[#e5e5e5]">
-          <div className="flex items-center justify-between border-b border-[#222] pb-4 mb-4">
-            <div className="flex items-center gap-2.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
-              <Terminal className="h-4 w-4 text-[#c5a059]" />
+        <section className="rounded-md border border-[#232634] bg-[#090a0f] p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1f2230] pb-4 mb-4 gap-3">
+            <div className="flex items-center gap-2.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
+              <Terminal className="h-4 w-4 text-[#d4af37]" />
               <span>System Architectural Blueprint</span>
             </div>
-            <button
-              onClick={copyDiagramToClipboard}
-              className="inline-flex items-center gap-1.5 rounded-sm border border-[#333] bg-[#111] px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] text-[#aaa] hover:border-[#c5a059] hover:text-[#fff] transition-colors cursor-pointer"
-            >
-              {copiedDiagram ? <Check className="h-3.5 w-3.5 text-[#c5a059]" /> : <Copy className="h-3.5 w-3.5" />}
-              {copiedDiagram ? 'Copied' : 'Copy Blueprint'}
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 text-[10px] text-[#64748b] sm:hidden">
+                <MoveHorizontal className="h-3 w-3" /> Scrollable
+              </span>
+              <button
+                onClick={copyDiagramToClipboard}
+                className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-[#2d3142] bg-[#141620] px-3 py-2 text-xs uppercase tracking-[0.14em] font-medium text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#fff] transition-colors cursor-pointer min-h-[38px]"
+              >
+                {copiedDiagram ? <Check className="h-3.5 w-3.5 text-[#22c55e]" /> : <Copy className="h-3.5 w-3.5" />}
+                {copiedDiagram ? 'Copied' : 'Copy Blueprint'}
+              </button>
+            </div>
           </div>
-          <div className="overflow-x-auto p-2">
-            <pre className="font-mono text-xs sm:text-[13px] leading-relaxed text-[#c5a059]/90 whitespace-pre">
+          <div className="overflow-x-auto p-2 bg-[#050608] rounded-sm border border-[#1a1c27]">
+            <pre className="font-mono text-[11px] sm:text-xs md:text-[13px] leading-relaxed text-[#d4af37] whitespace-pre min-w-[500px]">
               {chapter.diagramAscii.trim()}
             </pre>
           </div>
@@ -125,15 +172,17 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
       )}
 
       {/* Core Architectural Concepts */}
-      <section className="rounded-sm border border-[#222] bg-[#111] p-6 sm:p-10 space-y-8">
-        <div className="flex items-center justify-between border-b border-[#222] pb-4">
+      <section className="rounded-md border border-[#232634] bg-[#12141c] p-4 sm:p-8 lg:p-10 space-y-8">
+        <div className="flex items-center justify-between border-b border-[#232634] pb-4">
           <div className="flex items-center gap-3">
-            <BookOpen className="h-5 w-5 text-[#c5a059]" />
+            <div className="p-2 rounded-sm bg-[#191b26] border border-[#2d3142] text-[#d4af37]">
+              <BookOpen className="h-5 w-5" />
+            </div>
             <div>
-              <h2 className="text-2xl font-serif text-[#fff]">
+              <h2 className="text-xl sm:text-2xl font-serif font-medium text-[#ffffff]">
                 Core Architectural Concepts
               </h2>
-              <p className="text-xs text-[#777] uppercase tracking-[0.15em] mt-0.5">
+              <p className="text-[11px] text-[#94a3b8] uppercase tracking-[0.14em] mt-0.5">
                 Foundations &amp; Mechanistic Trade-Offs ({chapter.concepts.length} Modules)
               </p>
             </div>
@@ -146,13 +195,13 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
             <button
               key={idx}
               onClick={() => setActiveConceptIndex(idx)}
-              className={`shrink-0 rounded-sm px-4 py-2.5 text-xs tracking-wide transition-all cursor-pointer ${
+              className={`shrink-0 rounded-sm px-3.5 py-2.5 text-xs tracking-wide transition-all cursor-pointer min-h-[42px] ${
                 idx === activeConceptIndex
-                  ? 'bg-[#1c1c1c] text-[#fff] border-b-2 border-[#c5a059] font-medium'
-                  : 'bg-[#0c0c0c] text-[#777] hover:bg-[#161616] hover:text-[#bbb] border border-[#1e1e1e]'
+                  ? 'bg-[#1e2230] text-[#ffffff] border-b-2 border-[#d4af37] font-semibold shadow-xs'
+                  : 'bg-[#151722] text-[#94a3b8] hover:bg-[#1a1c28] hover:text-[#cbd5e1] border border-[#232634]'
               }`}
             >
-              <span className="font-mono text-[10px] text-[#c5a059] mr-1.5">{idx + 1}.</span>
+              <span className="font-mono text-[11px] text-[#d4af37] mr-1.5 font-bold">{idx + 1}.</span>
               {concept.title}
             </button>
           ))}
@@ -160,81 +209,94 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
         {/* Current Concept Details */}
         {currentConcept && (
-          <div className="space-y-6 pt-2">
+          <div className="space-y-6 pt-2" data-term={currentConcept.title}>
             {/* Concept Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e1e1e] pb-3">
-              <h3 className="text-xl sm:text-2xl font-serif text-[#fff]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1f2230] pb-3">
+              <h3 className="text-lg sm:text-2xl font-serif font-medium text-[#ffffff]">
                 {currentConcept.title}
               </h3>
-              <span className={`rounded-xs px-2.5 py-0.5 text-[10px] uppercase tracking-[0.2em] font-semibold border ${
-                currentConcept.confidence === 'stable'
-                  ? 'bg-[#101811] text-[#4ade80] border-[#1d331f]'
-                  : 'bg-[#1c160c] text-[#c5a059] border-[#382b14]'
-              }`}>
-                {currentConcept.confidence} standard
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const q = `explain ${currentConcept.title} in system design`;
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-[#2d3142] bg-[#161824] px-2.5 py-1 text-[11px] font-medium text-[#d4af37] hover:border-[#d4af37] hover:text-[#fff] transition-colors cursor-pointer min-h-[32px]"
+                  title={`Search Google: explain ${currentConcept.title} in system design`}
+                >
+                  <Search className="h-3 w-3" />
+                  <span>Explain on Google ↗</span>
+                </button>
+                <span className={`rounded-xs px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] font-semibold border ${
+                  currentConcept.confidence === 'stable'
+                    ? 'bg-[#122216] text-[#4ade80] border-[#22c55e]/30'
+                    : 'bg-[#221c10] text-[#d4af37] border-[#d4af37]/30'
+                }`}>
+                  {currentConcept.confidence} standard
+                </span>
+              </div>
             </div>
 
             {/* Simple Definition & Why it Exists */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-sm border border-[#222] bg-[#0c0c0c] p-5">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
-                  <Lightbulb className="h-3.5 w-3.5 text-[#c5a059]" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-sm border border-[#232634] bg-[#161823] p-4 sm:p-5">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
+                  <Lightbulb className="h-3.5 w-3.5 text-[#d4af37]" />
                   Core Definition
                 </div>
-                <p className="mt-3 text-sm text-[#ddd] leading-relaxed">
+                <p className="mt-2.5 text-xs sm:text-sm text-[#e2e8f0] leading-relaxed">
                   {currentConcept.simpleDefinition}
                 </p>
               </div>
 
-              <div className="rounded-sm border border-[#222] bg-[#0c0c0c] p-5">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#888]">
-                  <ShieldCheck className="h-3.5 w-3.5 text-[#c5a059]" />
+              <div className="rounded-sm border border-[#232634] bg-[#161823] p-4 sm:p-5">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#94a3b8]">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[#d4af37]" />
                   Why It Exists in Architecture
                 </div>
-                <p className="mt-3 text-sm text-[#ddd] leading-relaxed">
+                <p className="mt-2.5 text-xs sm:text-sm text-[#e2e8f0] leading-relaxed">
                   {currentConcept.whyItExists}
                 </p>
               </div>
             </div>
 
-            {/* Real World Analogy / Quote */}
-            <div className="relative rounded-sm border-l-2 border-[#c5a059] bg-[#0d0d0d] p-6 pl-8">
-              <div className="text-[36px] font-serif text-[#c5a059] opacity-25 absolute top-1 left-2">“</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-[#c5a059] font-semibold mb-2">
+            {/* Physical World Analogy / Quote */}
+            <div className="relative rounded-sm border-l-2 border-[#d4af37] bg-[#171924] p-5 sm:p-6 pl-6 sm:pl-8">
+              <div className="text-[32px] font-serif text-[#d4af37] opacity-30 absolute top-1 left-2">“</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-semibold mb-2">
                 Physical World Analogy
               </div>
-              <p className="text-sm sm:text-base font-serif italic text-[#ccc] leading-relaxed">
+              <p className="text-xs sm:text-base font-serif italic text-[#cbd5e1] leading-relaxed">
                 "{currentConcept.analogy}"
               </p>
             </div>
 
             {/* Deep Technical Explanation */}
-            <div className="rounded-sm border border-[#222] bg-[#0e0e0e] p-6">
-              <h4 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] mb-3">
+            <div className="rounded-sm border border-[#232634] bg-[#141620] p-5 sm:p-6">
+              <h4 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] mb-3">
                 Mechanistic Explanation &amp; Technical Execution
               </h4>
-              <p className="text-sm text-[#ccc] leading-relaxed whitespace-pre-line">
+              <p className="text-xs sm:text-sm text-[#cbd5e1] leading-relaxed whitespace-pre-line">
                 {currentConcept.technicalExplanation}
               </p>
             </div>
 
             {/* Production Example */}
-            <div className="rounded-sm border border-[#222] bg-[#0c0c0c] p-5 text-sm text-[#ccc]">
-              <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] mr-2 block sm:inline mb-1 sm:mb-0">
+            <div className="rounded-sm border border-[#232634] bg-[#161823] p-4 sm:p-5 text-xs sm:text-sm text-[#e2e8f0]">
+              <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] mr-2 block sm:inline mb-1 sm:mb-0">
                 Production Case:
               </span>
               <span>{currentConcept.example}</span>
             </div>
 
             {/* When to Use vs When Not to Use */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-sm border border-[#1d331f] bg-[#0a110b] p-5">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-sm border border-[#1c3822] bg-[#0e1c12] p-4 sm:p-5">
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#4ade80]">
                   <Check className="h-3.5 w-3.5 text-[#4ade80]" />
                   Architectural Fit (When To Use)
                 </div>
-                <ul className="mt-3 space-y-2 text-xs sm:text-sm text-[#bbb]">
+                <ul className="mt-2.5 space-y-2 text-xs sm:text-sm text-[#cbd5e1]">
                   {currentConcept.whenToUse.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span className="text-[#4ade80] font-bold">&bull;</span>
@@ -244,12 +306,12 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
                 </ul>
               </div>
 
-              <div className="rounded-sm border border-[#3b1c1c] bg-[#140b0b] p-5">
+              <div className="rounded-sm border border-[#3f1d22] bg-[#1f0e11] p-4 sm:p-5">
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#f87171]">
                   <AlertTriangle className="h-3.5 w-3.5 text-[#f87171]" />
                   Anti-Patterns (When NOT To Use)
                 </div>
-                <ul className="mt-3 space-y-2 text-xs sm:text-sm text-[#bbb]">
+                <ul className="mt-2.5 space-y-2 text-xs sm:text-sm text-[#cbd5e1]">
                   {currentConcept.whenNotToUse.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span className="text-[#f87171] font-bold">&bull;</span>
@@ -262,15 +324,15 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
             {/* Common Mistakes */}
             {currentConcept.commonMistakes && currentConcept.commonMistakes.length > 0 && (
-              <div className="rounded-sm border border-[#332514] bg-[#120e08] p-5">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
-                  <AlertTriangle className="h-3.5 w-3.5 text-[#c5a059]" />
+              <div className="rounded-sm border border-[#3d2e18] bg-[#1a140a] p-4 sm:p-5">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
+                  <AlertTriangle className="h-3.5 w-3.5 text-[#d4af37]" />
                   Common Traps &amp; Production Antipatterns
                 </div>
-                <ul className="mt-3 space-y-2 text-xs sm:text-sm text-[#ccc]">
+                <ul className="mt-2.5 space-y-2 text-xs sm:text-sm text-[#e2e8f0]">
                   {currentConcept.commonMistakes.map((mistake, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="text-[#c5a059] font-bold">&bull;</span>
+                      <span className="text-[#d4af37] font-bold">&bull;</span>
                       <span>{mistake}</span>
                     </li>
                   ))}
@@ -280,16 +342,16 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
             {/* Senior Interview Question & Model Answer */}
             {currentConcept.interviewQuestion && (
-              <div className="rounded-sm border border-[#2a2215] bg-[#0e0b07] p-6">
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] mb-3">
+              <div className="rounded-sm border border-[#332a18] bg-[#17130b] p-4 sm:p-6">
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] mb-2">
                   <HelpCircle className="h-4 w-4" />
                   Staff-Level Interview Question
                 </div>
-                <div className="text-base font-serif text-[#fff]">
+                <div className="text-sm sm:text-base font-serif text-[#ffffff]">
                   {currentConcept.interviewQuestion.question}
                 </div>
-                <div className="mt-4 text-sm text-[#bbb] bg-[#070707] p-5 rounded-sm border border-[#222] leading-relaxed">
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] block mb-2">
+                <div className="mt-3 text-xs sm:text-sm text-[#cbd5e1] bg-[#0c0a06] p-4 rounded-sm border border-[#2d2414] leading-relaxed">
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] block mb-1.5">
                     Ideal Response:
                   </span>
                   {currentConcept.interviewQuestion.answer}
@@ -302,36 +364,38 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
       {/* Trade-Off Analysis Matrix */}
       {chapter.tradeOffAnalysis && (
-        <section className="rounded-sm border border-[#222] bg-[#111] p-6 sm:p-10 space-y-6">
-          <div className="flex items-center gap-3 border-b border-[#222] pb-4">
-            <Scale className="h-5 w-5 text-[#c5a059]" />
+        <section className="rounded-md border border-[#232634] bg-[#12141c] p-4 sm:p-8 lg:p-10 space-y-6">
+          <div className="flex items-center gap-3 border-b border-[#232634] pb-4">
+            <div className="p-2 rounded-sm bg-[#191b26] border border-[#2d3142] text-[#d4af37]">
+              <Scale className="h-5 w-5" />
+            </div>
             <div>
-              <h2 className="text-2xl font-serif text-[#fff]">
+              <h2 className="text-xl sm:text-2xl font-serif font-medium text-[#ffffff]">
                 Trade-Off Evaluation: {chapter.tradeOffAnalysis.technologyA} vs. {chapter.tradeOffAnalysis.technologyB}
               </h2>
-              <p className="text-[10px] uppercase tracking-[0.15em] text-[#666] mt-0.5">
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#94a3b8] mt-0.5">
                 Every architectural choice represents an intentional compromise
               </p>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="border-b border-[#222] bg-[#0c0c0c] text-[#888]">
+          <div className="overflow-x-auto rounded-sm border border-[#232634]">
+            <table className="w-full text-left text-xs sm:text-sm min-w-[620px]">
+              <thead className="border-b border-[#232634] bg-[#151722] text-[#94a3b8]">
                 <tr>
-                  <th className="p-4 text-[10px] uppercase tracking-[0.15em] font-semibold">Evaluation Dimension</th>
-                  <th className="p-4 text-[10px] uppercase tracking-[0.15em] font-semibold text-[#c5a059]">{chapter.tradeOffAnalysis.technologyA}</th>
-                  <th className="p-4 text-[10px] uppercase tracking-[0.15em] font-semibold text-[#888]">{chapter.tradeOffAnalysis.technologyB}</th>
-                  <th className="p-4 text-[10px] uppercase tracking-[0.15em] font-semibold text-[#c5a059]">Architect Verdict</th>
+                  <th className="p-3 sm:p-4 text-[10px] uppercase tracking-[0.14em] font-semibold">Dimension</th>
+                  <th className="p-3 sm:p-4 text-[10px] uppercase tracking-[0.14em] font-semibold text-[#d4af37]">{chapter.tradeOffAnalysis.technologyA}</th>
+                  <th className="p-3 sm:p-4 text-[10px] uppercase tracking-[0.14em] font-semibold text-[#cbd5e1]">{chapter.tradeOffAnalysis.technologyB}</th>
+                  <th className="p-3 sm:p-4 text-[10px] uppercase tracking-[0.14em] font-semibold text-[#d4af37]">Verdict</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1e1e1e]">
+              <tbody className="divide-y divide-[#1f2230]">
                 {chapter.tradeOffAnalysis.comparisonDimensions.map((dim, i) => (
-                  <tr key={i} className="hover:bg-[#141414] transition-colors">
-                    <td className="p-4 font-medium text-[#fff]">{dim.dimension}</td>
-                    <td className="p-4 text-[#bbb]">{dim.optionA}</td>
-                    <td className="p-4 text-[#bbb]">{dim.optionB}</td>
-                    <td className="p-4 font-serif italic text-[#c5a059] bg-[#0a0a0a]">{dim.verdict}</td>
+                  <tr key={i} className="hover:bg-[#181a26] transition-colors">
+                    <td className="p-3 sm:p-4 font-medium text-[#ffffff]">{dim.dimension}</td>
+                    <td className="p-3 sm:p-4 text-[#cbd5e1]">{dim.optionA}</td>
+                    <td className="p-3 sm:p-4 text-[#cbd5e1]">{dim.optionB}</td>
+                    <td className="p-3 sm:p-4 font-serif italic text-[#d4af37] bg-[#0e1017] font-medium">{dim.verdict}</td>
                   </tr>
                 ))}
               </tbody>
@@ -341,29 +405,31 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
       )}
 
       {/* Practical Exercises & Interview Rubric */}
-      <section className="rounded-sm border border-[#222] bg-[#111] p-6 sm:p-10 space-y-8">
-        <div className="flex items-center gap-3 border-b border-[#222] pb-4">
-          <Code className="h-5 w-5 text-[#c5a059]" />
+      <section className="rounded-md border border-[#232634] bg-[#12141c] p-4 sm:p-8 lg:p-10 space-y-8">
+        <div className="flex items-center gap-3 border-b border-[#232634] pb-4">
+          <div className="p-2 rounded-sm bg-[#191b26] border border-[#2d3142] text-[#d4af37]">
+            <Code className="h-5 w-5" />
+          </div>
           <div>
-            <h2 className="text-2xl font-serif text-[#fff]">
+            <h2 className="text-xl sm:text-2xl font-serif font-medium text-[#ffffff]">
               Exercises &amp; Interview Evaluation
             </h2>
-            <p className="text-[10px] uppercase tracking-[0.15em] text-[#666] mt-0.5">
-              Rigorous problem-solving scenarios for senior design rounds
+            <p className="text-[10px] uppercase tracking-[0.14em] text-[#94a3b8] mt-0.5">
+              Problem-solving scenarios for senior and staff design rounds
             </p>
           </div>
         </div>
 
         {/* Quick Revision Takeaways */}
         {chapter.exercises.quickRevision && chapter.exercises.quickRevision.length > 0 && (
-          <div className="rounded-sm border border-[#222] bg-[#0c0c0c] p-6">
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] mb-3">
+          <div className="rounded-sm border border-[#232634] bg-[#161824] p-4 sm:p-6">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] mb-3">
               Core Principles Checklist
             </h3>
-            <ul className="space-y-2 text-xs sm:text-sm text-[#ccc]">
+            <ul className="space-y-2 text-xs sm:text-sm text-[#cbd5e1]">
               {chapter.exercises.quickRevision.map((point, i) => (
                 <li key={i} className="flex items-start gap-2.5">
-                  <span className="text-[#c5a059] font-bold">&bull;</span>
+                  <span className="text-[#d4af37] font-bold">&bull;</span>
                   <span>{point}</span>
                 </li>
               ))}
@@ -374,32 +440,32 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
         {/* Conceptual Questions with Toggle Reveal */}
         {chapter.exercises.conceptualQuestions && chapter.exercises.conceptualQuestions.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#888]">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#94a3b8]">
               Conceptual Drill ({chapter.exercises.conceptualQuestions.length} Prompts)
             </h3>
             <div className="space-y-3">
               {chapter.exercises.conceptualQuestions.map(q => {
                 const isRevealed = revealedAnswers[q.id];
                 return (
-                  <div key={q.id} className="rounded-sm border border-[#222] p-5 bg-[#0e0e0e]">
+                  <div key={q.id} className="rounded-sm border border-[#232634] p-4 sm:p-5 bg-[#151722]">
                     <div className="flex items-start justify-between gap-4">
-                      <p className="text-sm sm:text-base font-serif text-[#fff]">
+                      <p className="text-xs sm:text-base font-serif text-[#ffffff]">
                         {q.question}
                       </p>
                       <button
                         onClick={() => toggleAnswer(q.id)}
-                        className="shrink-0 inline-flex items-center gap-1 rounded-sm border border-[#333] bg-[#161616] px-3 py-1 text-[10px] uppercase tracking-[0.15em] text-[#aaa] hover:border-[#c5a059] hover:text-[#fff] cursor-pointer transition-colors"
+                        className="shrink-0 inline-flex items-center justify-center gap-1 rounded-sm border border-[#2d3142] bg-[#1a1d2a] px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium text-[#cbd5e1] hover:border-[#d4af37] hover:text-[#fff] cursor-pointer min-h-[36px] transition-colors"
                       >
                         {isRevealed ? (
-                          <>Hide <ChevronUp className="h-3 w-3" /></>
+                          <>Hide <ChevronUp className="h-3.5 w-3.5 text-[#d4af37]" /></>
                         ) : (
-                          <>Reveal <ChevronDown className="h-3 w-3" /></>
+                          <>Reveal <ChevronDown className="h-3.5 w-3.5 text-[#d4af37]" /></>
                         )}
                       </button>
                     </div>
                     {isRevealed && (
-                      <div className="mt-4 border-t border-[#222] pt-4 text-xs sm:text-sm text-[#bbb] leading-relaxed bg-[#080808] p-4 rounded-sm">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#c5a059] font-semibold block mb-1">
+                      <div className="mt-3 border-t border-[#232634] pt-3 text-xs sm:text-sm text-[#cbd5e1] leading-relaxed bg-[#0d0f15] p-4 rounded-sm border border-[#1e212d]">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-semibold block mb-1">
                           Model Formulation:
                         </span>
                         {q.answer}
@@ -412,51 +478,20 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
           </div>
         )}
 
-        {/* Design Exercises */}
-        {chapter.exercises.designExercises && chapter.exercises.designExercises.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#888]">
-              Architectural Design Scenarios
-            </h3>
-            <div className="space-y-4">
-              {chapter.exercises.designExercises.map(de => (
-                <div key={de.id} className="rounded-sm border border-[#222] p-6 bg-[#0c0c0c]">
-                  <div className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
-                    Scenario Description
-                  </div>
-                  <div className="text-base sm:text-lg font-serif text-[#fff] mt-1.5">
-                    {de.scenario}
-                  </div>
-                  <div className="mt-3 text-xs sm:text-sm text-[#aaa]">
-                    <span className="text-[#fff] font-medium">Deliverable Task: </span>
-                    {de.task}
-                  </div>
-                  <div className="mt-4 rounded-sm bg-[#080808] p-5 text-xs sm:text-sm text-[#bbb] border border-[#222]">
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] block mb-2">
-                      Staff Architect Blueprint Solution:
-                    </span>
-                    {de.solutionGuide}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Staff Interview Questions */}
         {chapter.exercises.interviewQuestions && chapter.exercises.interviewQuestions.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#888]">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#94a3b8]">
               Senior / Staff Interview Questions
             </h3>
             <div className="space-y-4">
               {chapter.exercises.interviewQuestions.map(iq => (
-                <div key={iq.id} className="rounded-sm border border-[#222] bg-[#0c0c0c] p-6">
-                  <div className="text-base sm:text-lg font-serif text-[#fff]">
+                <div key={iq.id} className="rounded-sm border border-[#232634] bg-[#151722] p-4 sm:p-6">
+                  <div className="text-sm sm:text-lg font-serif text-[#ffffff] font-medium">
                     Q: {iq.question}
                   </div>
-                  <div className="mt-4 text-xs sm:text-sm text-[#bbb] bg-[#080808] p-5 rounded-sm border border-[#222] leading-relaxed">
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059] block mb-2">
+                  <div className="mt-3 text-xs sm:text-sm text-[#cbd5e1] bg-[#0d0f15] p-4 sm:p-5 rounded-sm border border-[#232634] leading-relaxed">
+                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] block mb-1.5">
                       Exemplary Answer:
                     </span>
                     {iq.idealAnswer || iq.answer}
@@ -466,30 +501,112 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
             </div>
           </div>
         )}
-
-        {/* Practical Task */}
-        {chapter.exercises.practicalTask && (
-          <div className="rounded-sm border border-[#2a2215] bg-[#0e0b07] p-6">
-            <div className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#c5a059]">
-              Hands-On Verification: {chapter.exercises.practicalTask.title}
-            </div>
-            <div className="mt-2 text-sm text-[#ddd]">
-              {chapter.exercises.practicalTask.instructions}
-            </div>
-            <div className="mt-3 text-xs text-[#c5a059] font-mono">
-              Verification Criterion: {chapter.exercises.practicalTask.verification}
-            </div>
-          </div>
-        )}
       </section>
 
+      {/* Gate Smashers Video Lecture Integration */}
+      {matchingLectures.length > 0 && (
+        <section className="rounded-md border border-red-500/30 bg-[#12141c] p-4 sm:p-8 lg:p-10 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#232634] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-sm bg-red-950/50 border border-red-500/40 text-red-400">
+                <Youtube className="h-5 w-5 fill-current" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-serif font-medium text-[#ffffff]">
+                  Gate Smashers Video Lectures (Varun Sir)
+                </h2>
+                <p className="text-[10px] uppercase tracking-[0.14em] text-[#94a3b8] mt-0.5">
+                  {matchingLectures.length} Recommended Video Lesson{matchingLectures.length > 1 ? 's' : ''} for this Chapter
+                </p>
+              </div>
+            </div>
+
+            {onOpenLecturesTab && (
+              <button
+                onClick={onOpenLecturesTab}
+                className="inline-flex items-center gap-1.5 text-xs text-[#d4af37] hover:text-[#ebd078] font-medium transition-colors cursor-pointer"
+              >
+                <span>View Full 33-Lecture Syllabus</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {matchingLectures.map((lec) => (
+              <div 
+                key={lec.id}
+                className="flex flex-col justify-between rounded-sm border border-[#232634] bg-[#161824] p-4 sm:p-5 transition-all hover:border-[#d4af37]"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-xs bg-[#1c1910] border border-[#d4af37]/40 px-2 py-0.5 text-[10px] font-mono font-bold text-[#d4af37]">
+                        Lec {lec.lectureNumber}
+                      </span>
+                      <span className="flex items-center gap-1 text-[11px] font-mono text-[#94a3b8]">
+                        <Clock className="h-3 w-3" />
+                        {lec.duration}
+                      </span>
+                    </div>
+                    <span className="text-[9px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-[#1f2230] border border-[#2d3142] text-[#94a3b8]">
+                      {lec.category}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-medium text-[#ffffff] leading-snug">
+                    {lec.title}
+                  </h3>
+
+                  <p className="text-xs text-[#94a3b8] leading-relaxed">
+                    {lec.summary}
+                  </p>
+
+                  <div className="space-y-1 pt-1 border-t border-[#232634]/60">
+                    <div className="text-[10px] uppercase tracking-wider text-[#d4af37] font-semibold">Key Points:</div>
+                    {lec.keyTakeaways.slice(0, 2).map((takeaway, idx) => (
+                      <div key={idx} className="text-[11px] text-[#cbd5e1] flex items-start gap-1.5">
+                        <span className="text-[#d4af37]">&bull;</span>
+                        <span>{takeaway}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-3 mt-4 border-t border-[#232634] flex items-center justify-between">
+                  <a
+                    href={lec.youtubeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-red-600/90 hover:bg-red-600 text-white text-xs font-medium transition-colors"
+                  >
+                    <Youtube className="h-3.5 w-3.5 fill-current" />
+                    Watch on YouTube
+                    <ExternalLink className="h-3 w-3 opacity-80" />
+                  </a>
+
+                  {onOpenLecturesTab && (
+                    <button
+                      onClick={onOpenLecturesTab}
+                      className="text-xs text-[#94a3b8] hover:text-[#ffffff] cursor-pointer"
+                    >
+                      Browse All Videos &rarr;
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Verified Sources & Conference Videos */}
-      <section className="rounded-sm border border-[#222] bg-[#111] p-6 sm:p-10 space-y-6">
-        <div className="border-b border-[#222] pb-4">
-          <h2 className="text-2xl font-serif text-[#fff]">
+      <section className="rounded-md border border-[#232634] bg-[#12141c] p-4 sm:p-8 lg:p-10 space-y-6">
+        <div className="border-b border-[#232634] pb-4">
+          <h2 className="text-xl sm:text-2xl font-serif font-medium text-[#ffffff]">
             Primary Standards, Papers &amp; Lectures
           </h2>
-          <p className="text-[10px] uppercase tracking-[0.15em] text-[#666] mt-0.5">
+          <p className="text-[10px] uppercase tracking-[0.14em] text-[#94a3b8] mt-0.5">
             Peer-reviewed research and authoritative specifications
           </p>
         </div>
@@ -502,60 +619,25 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               href={src.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col justify-between rounded-sm border border-[#222] bg-[#0c0c0c] p-5 transition-all hover:border-[#c5a059] group"
+              className="flex flex-col justify-between rounded-sm border border-[#232634] bg-[#161824] p-4 sm:p-5 transition-all hover:border-[#d4af37] group"
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded-xs bg-[#181818] px-2 py-0.5 text-[9px] uppercase tracking-[0.15em] font-semibold text-[#c5a059] border border-[#2a2a2a]">
+                  <span className="rounded-xs bg-[#1f2230] px-2 py-0.5 text-[9px] uppercase tracking-[0.16em] font-semibold text-[#d4af37] border border-[#2d3142]">
                     {src.type}
                   </span>
-                  <ExternalLink className="h-3.5 w-3.5 text-[#555] group-hover:text-[#c5a059] transition-colors" />
+                  <ExternalLink className="h-3.5 w-3.5 text-[#64748b] group-hover:text-[#d4af37] transition-colors" />
                 </div>
-                <div className="mt-3 text-sm font-medium text-[#fff]">
+                <div className="mt-3 text-sm font-medium text-[#ffffff] group-hover:text-[#d4af37] transition-colors">
                   {src.title}
                 </div>
-                <p className="mt-1.5 text-xs text-[#777] leading-relaxed">
+                <p className="mt-1.5 text-xs text-[#94a3b8] leading-relaxed">
                   {src.whatItSupports}
                 </p>
               </div>
             </a>
           ))}
         </div>
-
-        {/* Videos */}
-        {chapter.videos && chapter.videos.length > 0 && (
-          <div className="space-y-4 pt-4 border-t border-[#1e1e1e]">
-            <div className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#888]">
-              Authoritative Video Lectures
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {chapter.videos.map((vid, i) => (
-                <a
-                  key={i}
-                  href={vid.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3.5 rounded-sm border border-[#222] bg-[#0c0c0c] p-4 transition-all hover:border-[#c5a059] group"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-[#181818] border border-[#222] text-[#c5a059] group-hover:border-[#c5a059] transition-colors">
-                    <Play className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium text-[#fff] truncate">
-                      {vid.title}
-                    </div>
-                    <div className="text-[10px] text-[#666] uppercase tracking-wider mt-0.5">
-                      {vid.creator} &bull; {vid.duration} &bull; <span className="text-[#c5a059]">{vid.difficulty}</span>
-                    </div>
-                    <p className="mt-1.5 text-xs text-[#888] line-clamp-2">
-                      {vid.whatYouWillLearn}
-                    </p>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
 
       {/* Next Chapter Navigation Button */}
@@ -563,7 +645,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
         <div className="flex justify-end pt-4">
           <button
             onClick={onSelectNextChapter}
-            className="inline-flex items-center gap-2.5 rounded-sm bg-[#c5a059] px-6 py-3.5 text-[11px] uppercase tracking-[0.2em] font-bold text-[#080808] hover:bg-[#d6b57a] transition-colors cursor-pointer shadow-md"
+            className="inline-flex items-center justify-center gap-2.5 rounded-sm bg-[#d4af37] px-6 py-3.5 text-xs uppercase tracking-[0.18em] font-bold text-[#0b0c10] hover:bg-[#ebd078] transition-colors cursor-pointer shadow-md min-h-[48px] w-full sm:w-auto"
           >
             Advance to Next Chapter
             <ArrowRight className="h-4 w-4" />

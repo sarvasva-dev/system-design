@@ -1,0 +1,17 @@
+{
+  "name": "System Design for SaaS & IaaS",
+  "short_name": "SystemDesign",
+  "description": "A comprehensive reference textbook and interactive study guide covering SaaS multi-tenancy, IaaS cloud platforms, distributed systems, capacity planning, 20 real-world case studies, and 250 interview questions with verified sources.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0c10",
+  "theme_color": "#0b0c10",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64 128x128 256x256 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -8,12 +8,58 @@ import { CapacityCalculator } from './components/CapacityCalculator';
 import { GlossaryView } from './components/GlossaryView';
 import { ChecklistView } from './components/ChecklistView';
 import { SourcesView } from './components/SourcesView';
+import { ColorAwarenessModal } from './components/ColorAwarenessModal';
+import { DoubleTapExplainer } from './components/DoubleTapExplainer';
+import { SeoWebsitePreviewModal } from './components/SeoWebsitePreviewModal';
+import { InteractiveQuizModal } from './components/InteractiveQuizModal';
+import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
+import { StudyExportModal } from './components/StudyExportModal';
+import { GateSmashersLecturesView } from './components/GateSmashersLecturesView';
+import { AppTheme } from './components/ThemeToggle';
+import { 
+  BookOpen, 
+  Layers, 
+  Calculator, 
+  HelpCircle, 
+  CheckSquare,
+  Youtube 
+} from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'chapters' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources'>('chapters');
+  const [activeTab, setActiveTab] = useState<'chapters' | 'lectures' | 'casestudies' | 'calculator' | 'glossary' | 'checklist' | 'sources'>('chapters');
   const [selectedChapterId, setSelectedChapterId] = useState<string>(ALL_CHAPTERS[0]?.id || 'part0-mindset');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  
+  // Modals state
+  const [colorModalOpen, setColorModalOpen] = useState<boolean>(false);
+  const [seoModalOpen, setSeoModalOpen] = useState<boolean>(false);
+  const [quizModalOpen, setQuizModalOpen] = useState<boolean>(false);
+  const [shortcutsModalOpen, setShortcutsModalOpen] = useState<boolean>(false);
+  const [exportModalOpen, setExportModalOpen] = useState<boolean>(false);
+
+  // Theme state: dark | light | blueprint
+  const [theme, setTheme] = useState<AppTheme>(() => {
+    try {
+      const saved = localStorage.getItem('system_design_theme') as AppTheme;
+      if (saved === 'light' || saved === 'blueprint' || saved === 'dark') {
+        return saved;
+      }
+    } catch {
+      // ignore
+    }
+    return 'dark';
+  });
+
+  const [colorAwarenessMode, setColorAwarenessMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('system_design_color_awareness') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+  const [externalSearchTerm, setExternalSearchTerm] = useState<string | null>(null);
+
   const [completedChapterIds, setCompletedChapterIds] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('system_design_completed_chapters');
@@ -26,6 +72,90 @@ export default function App() {
     return new Set<string>();
   });
 
+  // Apply and persist theme
+  useEffect(() => {
+    try {
+      localStorage.setItem('system_design_theme', theme);
+    } catch {
+      // ignore
+    }
+
+    // Apply class to body
+    document.body.classList.remove('theme-light', 'theme-blueprint');
+    if (theme === 'light') {
+      document.body.classList.add('theme-light');
+    } else if (theme === 'blueprint') {
+      document.body.classList.add('theme-blueprint');
+    }
+
+    // Update meta theme-color
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      if (theme === 'light') {
+        metaThemeColor.setAttribute('content', '#f8fafc');
+      } else if (theme === 'blueprint') {
+        metaThemeColor.setAttribute('content', '#080d1a');
+      } else {
+        metaThemeColor.setAttribute('content', '#0b0c10');
+      }
+    }
+  }, [theme]);
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        if (e.key === 'Escape') {
+          target.blur();
+        }
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        setColorModalOpen(false);
+        setSeoModalOpen(false);
+        setQuizModalOpen(false);
+        setShortcutsModalOpen(false);
+        setExportModalOpen(false);
+        return;
+      }
+
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setShortcutsModalOpen(prev => !prev);
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        setTheme(prev => {
+          if (prev === 'dark') return 'light';
+          if (prev === 'light') return 'blueprint';
+          return 'dark';
+        });
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setSeoModalOpen(prev => !prev);
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setColorModalOpen(prev => !prev);
+      } else if (e.key === 'q' || e.key === 'Q') {
+        e.preventDefault();
+        setQuizModalOpen(prev => !prev);
+      } else if (e.key === 'e' || e.key === 'E') {
+        e.preventDefault();
+        setExportModalOpen(prev => !prev);
+      } else if (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key === 'k')) {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Persist completed chapters
   useEffect(() => {
     try {
@@ -37,6 +167,15 @@ export default function App() {
       // ignore
     }
   }, [completedChapterIds]);
+
+  // Persist color awareness preference
+  useEffect(() => {
+    try {
+      localStorage.setItem('system_design_color_awareness', String(colorAwarenessMode));
+    } catch {
+      // ignore
+    }
+  }, [colorAwarenessMode]);
 
   const toggleChapterComplete = (chapterId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -75,7 +214,9 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-[#080808] text-[#e5e5e5] flex flex-col font-sans selection:bg-[#c5a059]/30 selection:text-[#fff]">
+    <div className={`min-h-screen bg-[#0b0c10] text-[#e2e8f0] flex flex-col font-sans selection:bg-[#d4af37]/25 selection:text-[#ffffff] ${
+      theme === 'light' ? 'theme-light' : theme === 'blueprint' ? 'theme-blueprint' : ''
+    }`}>
       {/* Header */}
       <Header
         activeTab={activeTab}
@@ -88,6 +229,14 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         completedCount={completedChapterIds.size}
         totalChapters={ALL_CHAPTERS.length}
+        currentTheme={theme}
+        setTheme={setTheme}
+        onOpenColorModal={() => setColorModalOpen(true)}
+        colorAwarenessMode={colorAwarenessMode}
+        onOpenSeoModal={() => setSeoModalOpen(true)}
+        onOpenQuizModal={() => setQuizModalOpen(true)}
+        onOpenShortcutsModal={() => setShortcutsModalOpen(true)}
+        onOpenExportModal={() => setExportModalOpen(true)}
       />
 
       {/* Main Container */}
@@ -109,13 +258,27 @@ export default function App() {
         )}
 
         {/* Dynamic Content View Area */}
-        <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8 lg:px-12 bg-[#080808]">
+        <main className="flex-1 overflow-y-auto px-3 pt-4 pb-20 sm:py-6 sm:px-6 md:px-8 lg:px-12 bg-[#0b0c10]">
           {activeTab === 'chapters' && currentChapter && (
             <ChapterView
               chapter={currentChapter}
               isCompleted={completedChapterIds.has(currentChapter.id)}
               onToggleComplete={() => toggleChapterComplete(currentChapter.id)}
               onSelectNextChapter={handleSelectNextChapter}
+              onOpenLecturesTab={() => setActiveTab('lectures')}
+            />
+          )}
+
+          {activeTab === 'lectures' && (
+            <GateSmashersLecturesView
+              onSelectChapter={(chapterId) => {
+                const targetChapter = ALL_CHAPTERS.find(c => c.id === chapterId);
+                if (targetChapter) {
+                  setSelectedChapterId(targetChapter.id);
+                }
+                setActiveTab('chapters');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           )}
 
@@ -131,15 +294,137 @@ export default function App() {
         </main>
       </div>
 
-      {/* Sophisticated Dark Footer */}
-      <footer className="h-14 border-t border-[#222] bg-[#0c0c0c] flex items-center justify-between px-6 sm:px-12 text-[10px] uppercase tracking-[0.2em] text-[#555]">
+      {/* Mobile Bottom Navigation Bar */}
+      <nav id="mobile-bottom-nav" className="sticky bottom-0 z-30 flex h-14 sm:h-15 items-center justify-around border-t border-[#232634] bg-[#0e0f14]/95 px-2 backdrop-blur-md lg:hidden">
+        <button
+          onClick={() => {
+            setActiveTab('chapters');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-[10px] font-medium transition-colors ${
+            activeTab === 'chapters' ? 'text-[#d4af37]' : 'text-[#94a3b8] hover:text-[#ffffff]'
+          }`}
+        >
+          <BookOpen className="h-4 w-4" />
+          <span>Chapters</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('lectures');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-[10px] font-medium transition-colors ${
+            activeTab === 'lectures' ? 'text-red-400 font-semibold' : 'text-[#94a3b8] hover:text-[#ffffff]'
+          }`}
+        >
+          <Youtube className="h-4 w-4" />
+          <span>Videos</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('casestudies');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-[10px] font-medium transition-colors ${
+            activeTab === 'casestudies' ? 'text-[#d4af37]' : 'text-[#94a3b8] hover:text-[#ffffff]'
+          }`}
+        >
+          <Layers className="h-4 w-4" />
+          <span>Cases</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('calculator');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-[10px] font-medium transition-colors ${
+            activeTab === 'calculator' ? 'text-[#d4af37]' : 'text-[#94a3b8] hover:text-[#ffffff]'
+          }`}
+        >
+          <Calculator className="h-4 w-4" />
+          <span>Math</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('glossary');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-[10px] font-medium transition-colors ${
+            activeTab === 'glossary' ? 'text-[#d4af37]' : 'text-[#94a3b8] hover:text-[#ffffff]'
+          }`}
+        >
+          <HelpCircle className="h-4 w-4" />
+          <span>Glossary</span>
+        </button>
+      </nav>
+
+      {/* Desktop Footer */}
+      <footer className="hidden sm:flex h-14 border-t border-[#232634] bg-[#0e0f14] items-center justify-between px-6 sm:px-12 text-[10px] uppercase tracking-[0.2em] text-[#64748b]">
         <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#c5a059]"></span>
-          <span>System Blueprint: 0x-Staff-Arch</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]"></span>
+          <span className="text-[#94a3b8]">System Blueprint: 0x-Staff-Arch</span>
+          <span className="text-[#475569]">&bull; Theme: {theme}</span>
         </div>
-        <div>&copy; 2026 System Design for SaaS &amp; IaaS Reference Guide</div>
-        <div className="hidden sm:block">Verified Standards &bull; RFC 9110 / CAP / Raft</div>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setShortcutsModalOpen(true)}
+            className="text-[#94a3b8] hover:text-[#d4af37] transition-colors cursor-pointer"
+          >
+            Hotkeys (?)
+          </button>
+          <span>&copy; 2026 System Design Reference Guide</span>
+        </div>
+        <div>Verified Standards &bull; RFC 9110 / CAP / Raft</div>
       </footer>
+
+      {/* Color Awareness & Architectural Legend Modal */}
+      <ColorAwarenessModal
+        isOpen={colorModalOpen}
+        onClose={() => setColorModalOpen(false)}
+        colorAwarenessMode={colorAwarenessMode}
+        setColorAwarenessMode={setColorAwarenessMode}
+        onSearchTerm={(term) => {
+          setExternalSearchTerm(term);
+          setColorModalOpen(false);
+        }}
+      />
+
+      {/* Global Double-Tap Term Explainer HUD */}
+      <DoubleTapExplainer
+        externalSearchTerm={externalSearchTerm}
+        onClearExternalTerm={() => setExternalSearchTerm(null)}
+        onOpenColorModal={() => setColorModalOpen(true)}
+        colorAwarenessMode={colorAwarenessMode}
+      />
+
+      {/* SEO & Website Social Preview Modal */}
+      <SeoWebsitePreviewModal
+        isOpen={seoModalOpen}
+        onClose={() => setSeoModalOpen(false)}
+      />
+
+      {/* Interactive Staff Engineering Quiz Modal */}
+      <InteractiveQuizModal
+        isOpen={quizModalOpen}
+        onClose={() => setQuizModalOpen(false)}
+      />
+
+      {/* Keyboard Shortcuts Reference Modal */}
+      <KeyboardShortcutsModal
+        isOpen={shortcutsModalOpen}
+        onClose={() => setShortcutsModalOpen(false)}
+      />
+
+      {/* Study Plan & Syllabus Export Modal */}
+      <StudyExportModal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        completedChapterIds={completedChapterIds}
+      />
     </div>
   );
 }

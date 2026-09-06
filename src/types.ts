@@ -16,6 +16,21 @@ export interface VerifiedVideo {
   url: string;
 }
 
+export interface GateSmashersLecture {
+  id: string;
+  lectureNumber: number;
+  title: string;
+  duration: string;
+  category: string;
+  summary: string;
+  keyTakeaways: string[];
+  associatedChapterTitle: string;
+  associatedChapterId: string;
+  youtubeUrl: string;
+  searchQuery: string;
+  isPopular?: boolean;
+}
+
 export interface ChapterExercise {
   quickRevision: string[];
   conceptualQuestions: { id: string; question: string; answer: string }[];

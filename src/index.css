@@ -2,9 +2,12 @@
 
 @layer base {
   body {
-    background-color: #080808;
-    color: #e5e5e5;
+    background-color: #0b0c10;
+    color: #e2e8f0;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
@@ -14,4 +17,420 @@
 
 .font-mono {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0e0f14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272a38;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
+
+/* ==========================================================================
+   THEME: EDITORIAL LIGHT / ARCHITECTURAL PAPER
+   ========================================================================== */
+.theme-light,
+.theme-light body {
+  color-scheme: light;
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.theme-light header {
+  background-color: #ffffff !important;
+  border-bottom-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.theme-light nav#mobile-bottom-nav {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-top-color: #e2e8f0 !important;
+}
+
+.theme-light footer {
+  background-color: #f1f5f9 !important;
+  border-top-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+.theme-light aside {
+  background-color: #ffffff !important;
+  border-right-color: #e2e8f0 !important;
+}
+
+.theme-light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.theme-light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.theme-light ::-webkit-scrollbar-thumb:hover {
+  background: #b45309;
+}
+
+/* Base canvas background overrides */
+.theme-light [class*="bg-[#0b0c10]"],
+.theme-light [class*="bg-[#050608]"],
+.theme-light [class*="bg-[#07080b]"],
+.theme-light [class*="bg-[#090a0f]"],
+.theme-light [class*="bg-[#0a0b0f]"],
+.theme-light [class*="bg-[#0c0d12]"],
+.theme-light [class*="bg-[#0d0e12]"],
+.theme-light [class*="bg-[#0d0e14]"],
+.theme-light [class*="bg-[#0d0f15]"],
+.theme-light [class*="bg-[#0e1017]"] {
+  background-color: #f8fafc !important;
+}
+
+/* Primary Cards & Structural Surfaces */
+.theme-light [class*="bg-[#0e0f14]"],
+.theme-light [class*="bg-[#10121a]"],
+.theme-light [class*="bg-[#12141c]"],
+.theme-light [class*="bg-[#13151f]"],
+.theme-light [class*="bg-[#14161f]"],
+.theme-light [class*="bg-[#141620]"],
+.theme-light [class*="bg-[#141622]"],
+.theme-light [class*="bg-[#121520]"],
+.theme-light [class*="bg-[#151722]"],
+.theme-light [class*="bg-[#161722]"],
+.theme-light [class*="bg-[#151824]"],
+.theme-light [class*="bg-[#161824]"] {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Elevated, Inner Panels & Concept Cards (Fixes Core Definition, Why it Exists, etc.) */
+.theme-light [class*="bg-[#161823]"],
+.theme-light [class*="bg-[#171a25]"],
+.theme-light [class*="bg-[#171a26]"],
+.theme-light [class*="bg-[#181a24]"],
+.theme-light [class*="bg-[#181a26]"],
+.theme-light [class*="bg-[#191b26]"],
+.theme-light [class*="bg-[#1a1c26]"],
+.theme-light [class*="bg-[#1a1c28]"],
+.theme-light [class*="bg-[#1a1d28]"],
+.theme-light [class*="bg-[#1a1d2a]"],
+.theme-light [class*="bg-[#1a1d2b]"],
+.theme-light [class*="bg-[#1c1e2d]"],
+.theme-light [class*="bg-[#1c1f2b]"],
+.theme-light [class*="bg-[#1c1f2d]"],
+.theme-light [class*="bg-[#1e202c]"],
+.theme-light [class*="bg-[#1e212f]"],
+.theme-light [class*="bg-[#1e2230]"],
+.theme-light [class*="bg-[#1f2230]"],
+.theme-light [class*="bg-[#1f2334]"],
+.theme-light [class*="bg-[#282d3f]"] {
+  background-color: #f1f5f9 !important;
+}
+
+/* Analogies, Quotes & Amber Callouts (Warm Architectural Note) */
+.theme-light [class*="bg-[#171924]"],
+.theme-light [class*="bg-[#16130b]"],
+.theme-light [class*="bg-[#17130b]"],
+.theme-light [class*="bg-[#1a140a]"],
+.theme-light [class*="bg-[#1b1509]"],
+.theme-light [class*="bg-[#1c1910]"],
+.theme-light [class*="bg-[#1e1c14]"],
+.theme-light [class*="bg-[#221c10]"],
+.theme-light [class*="bg-[#26150a]"],
+.theme-light [class*="bg-[#0c0a06]"],
+.theme-light [class*="bg-[#0d0b06]"] {
+  background-color: #fffbeb !important;
+  color: #92400e !important;
+}
+
+/* Architectural Fit & When to Use (Light Emerald Green Card) */
+.theme-light [class*="bg-[#0e1c12]"],
+.theme-light [class*="bg-[#0e2114]"],
+.theme-light [class*="bg-[#122216]"],
+.theme-light [class*="bg-[#152e1d]"],
+.theme-light [class*="bg-[#1f1a10]"] {
+  background-color: #f0fdf4 !important;
+  color: #166534 !important;
+}
+
+.theme-light [class*="border-[#1c3822]"],
+.theme-light [class*="border-[#22c55e]"] {
+  border-color: #bbf7d0 !important;
+}
+
+/* Anti-Patterns & Risk Blocks (Light Rose / Red Card) */
+.theme-light [class*="bg-[#100709]"],
+.theme-light [class*="bg-[#1f0e11]"],
+.theme-light [class*="bg-[#241113]"],
+.theme-light [class*="bg-[#261214]"] {
+  background-color: #fef2f2 !important;
+  color: #991b1b !important;
+}
+
+.theme-light [class*="border-[#3f1d22]"],
+.theme-light [class*="border-[#ef4444]"] {
+  border-color: #fecaca !important;
+}
+
+/* Consensus & Distributed Systems Badges (Light Purple) */
+.theme-light [class*="bg-[#1b1429]"],
+.theme-light [class*="bg-[#1c1229]"] {
+  background-color: #faf5ff !important;
+  color: #6b21a8 !important;
+}
+
+/* Edge & Network Panels (Light Cyan) */
+.theme-light [class*="bg-[#0d2238]"],
+.theme-light [class*="bg-[#0e1d2c]"] {
+  background-color: #f0f9ff !important;
+  color: #075985 !important;
+}
+
+/* Global Border overrides in Light Theme */
+.theme-light [class*="border-[#232634]"],
+.theme-light [class*="border-[#1f2230]"],
+.theme-light [class*="border-[#272a38]"],
+.theme-light [class*="border-[#2d3142]"],
+.theme-light [class*="border-[#1e202c]"],
+.theme-light [class*="border-[#1a1c27]"],
+.theme-light [class*="border-[#1f212d]"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* High-Contrast Typography in Light Theme */
+.theme-light [class*="text-[#ffffff]"] {
+  color: #0f172a !important;
+}
+
+.theme-light [class*="text-[#e2e8f0]"] {
+  color: #1e293b !important;
+}
+
+.theme-light [class*="text-[#cbd5e1]"] {
+  color: #334155 !important;
+}
+
+.theme-light [class*="text-[#94a3b8]"] {
+  color: #64748b !important;
+}
+
+.theme-light [class*="text-[#64748b]"] {
+  color: #475569 !important;
+}
+
+/* Accent Gold -> Rich Cognac Amber for WCAG AAA legibility */
+.theme-light [class*="text-[#d4af37]"] {
+  color: #b45309 !important;
+}
+
+.theme-light [class*="border-[#d4af37]"] {
+  border-color: #b45309 !important;
+}
+
+/* Accent Green */
+.theme-light [class*="text-[#4ade80]"],
+.theme-light [class*="text-[#22c55e]"] {
+  color: #16a34a !important;
+}
+
+/* Accent Red */
+.theme-light [class*="text-[#f87171]"],
+.theme-light [class*="text-[#ef4444]"] {
+  color: #dc2626 !important;
+}
+
+/* Accent Cyan */
+.theme-light [class*="text-[#38bdf8]"] {
+  color: #0284c7 !important;
+}
+
+/* Accent Purple */
+.theme-light [class*="text-[#c084fc]"] {
+  color: #7c3aed !important;
+}
+
+/* Blueprint / Code Blocks in Light Mode */
+.theme-light pre {
+  background-color: #0f172a !important;
+  color: #38bdf8 !important;
+  border-color: #334155 !important;
+}
+
+.theme-light code {
+  color: #0f172a !important;
+}
+
+.theme-light kbd {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #b45309 !important;
+}
+
+/* Form controls */
+.theme-light input,
+.theme-light select,
+.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Table styling in Light Theme */
+.theme-light table {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.theme-light th {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.theme-light td {
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.theme-light tr:nth-child(even) td {
+  background-color: #f8fafc !important;
+}
+
+/* ==========================================================================
+   THEME: BLUEPRINT TECHNICAL (Deep Navy & High-Contrast Cyan)
+   ========================================================================== */
+.theme-blueprint,
+.theme-blueprint body {
+  color-scheme: dark;
+  background-color: #080d1a !important;
+  color: #e0f2fe !important;
+}
+
+.theme-blueprint header {
+  background-color: #0c1322 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+.theme-blueprint nav#mobile-bottom-nav {
+  background-color: rgba(12, 19, 34, 0.95) !important;
+  border-top-color: #1e293b !important;
+}
+
+.theme-blueprint footer {
+  background-color: #0a101d !important;
+  border-top-color: #1e293b !important;
+  color: #64748b !important;
+}
+
+.theme-blueprint aside {
+  background-color: #0a101d !important;
+  border-right-color: #1e293b !important;
+}
+
+/* Blueprint Canvas overrides */
+.theme-blueprint [class*="bg-[#0b0c10]"],
+.theme-blueprint [class*="bg-[#050608]"],
+.theme-blueprint [class*="bg-[#07080b]"],
+.theme-blueprint [class*="bg-[#090a0f]"],
+.theme-blueprint [class*="bg-[#0a0b0f]"],
+.theme-blueprint [class*="bg-[#0c0d12]"],
+.theme-blueprint [class*="bg-[#0d0e12]"],
+.theme-blueprint [class*="bg-[#0d0e14]"],
+.theme-blueprint [class*="bg-[#0d0f15]"],
+.theme-blueprint [class*="bg-[#0e1017]"] {
+  background-color: #080d1a !important;
+}
+
+/* Blueprint Primary Surfaces */
+.theme-blueprint [class*="bg-[#0e0f14]"],
+.theme-blueprint [class*="bg-[#10121a]"],
+.theme-blueprint [class*="bg-[#12141c]"],
+.theme-blueprint [class*="bg-[#13151f]"],
+.theme-blueprint [class*="bg-[#14161f]"],
+.theme-blueprint [class*="bg-[#141620]"],
+.theme-blueprint [class*="bg-[#141622]"],
+.theme-blueprint [class*="bg-[#121520]"],
+.theme-blueprint [class*="bg-[#151722]"],
+.theme-blueprint [class*="bg-[#161722]"] {
+  background-color: #0d1527 !important;
+  border-color: #1e293b !important;
+}
+
+/* Blueprint Elevated & Concept Panels */
+.theme-blueprint [class*="bg-[#161823]"],
+.theme-blueprint [class*="bg-[#161824]"],
+.theme-blueprint [class*="bg-[#151824]"],
+.theme-blueprint [class*="bg-[#171924]"],
+.theme-blueprint [class*="bg-[#171a25]"],
+.theme-blueprint [class*="bg-[#171a26]"],
+.theme-blueprint [class*="bg-[#181a24]"],
+.theme-blueprint [class*="bg-[#181a26]"],
+.theme-blueprint [class*="bg-[#191b26]"],
+.theme-blueprint [class*="bg-[#1a1c26]"],
+.theme-blueprint [class*="bg-[#1a1c28]"],
+.theme-blueprint [class*="bg-[#1a1d28]"],
+.theme-blueprint [class*="bg-[#1a1d2a]"],
+.theme-blueprint [class*="bg-[#1a1d2b]"],
+.theme-blueprint [class*="bg-[#1c1e2d]"],
+.theme-blueprint [class*="bg-[#1c1f2b]"],
+.theme-blueprint [class*="bg-[#1c1f2d]"],
+.theme-blueprint [class*="bg-[#1e202c]"],
+.theme-blueprint [class*="bg-[#1e212f]"],
+.theme-blueprint [class*="bg-[#1e2230]"],
+.theme-blueprint [class*="bg-[#1f2230]"],
+.theme-blueprint [class*="bg-[#1f2334]"],
+.theme-blueprint [class*="bg-[#282d3f]"] {
+  background-color: #111d35 !important;
+}
+
+/* Blueprint Borders */
+.theme-blueprint [class*="border-[#232634]"],
+.theme-blueprint [class*="border-[#1f2230]"],
+.theme-blueprint [class*="border-[#272a38]"],
+.theme-blueprint [class*="border-[#2d3142]"],
+.theme-blueprint [class*="border-[#1e202c]"],
+.theme-blueprint [class*="border-[#1a1c27]"],
+.theme-blueprint [class*="border-[#1f212d]"] {
+  border-color: #1e3a5f !important;
+}
+
+/* Blueprint Accents */
+.theme-blueprint [class*="text-[#d4af37]"] {
+  color: #38bdf8 !important;
+}
+
+.theme-blueprint [class*="border-[#d4af37]"] {
+  border-color: #38bdf8 !important;
+}
+
+/* ==========================================================================
+   PRINT READY STYLES
+   ========================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  nav, header, footer, button, .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
 }
