@@ -6,6 +6,9 @@ import { ChapterDiagramDispatcher } from './diagrams/ChapterDiagramDispatcher';
 import { ConceptArchitectureVisualizer } from './diagrams/ConceptArchitectureVisualizer';
 import { SyllabusRoadmapBar } from './SyllabusRoadmapBar';
 import { FlowAnimator } from './FlowAnimator';
+import { HinglishChapterCard } from './HinglishChapterCard';
+import { JargonBusterModal } from './JargonBusterModal';
+import { getHinglishGuideForChapter } from '../data/hinglish_guides';
 import { 
   CheckCircle2, 
   Circle, 
@@ -58,6 +61,33 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
   const [diagramMode, setDiagramMode] = useState<'visual' | 'animated' | 'ascii'>('visual');
 
+  // Reading Comfort & Language State
+  const [languageMode, setLanguageMode] = useState<'hinglish' | 'english'>(() => {
+    try {
+      return (localStorage.getItem('sys_design_lang') as 'hinglish' | 'english') || 'hinglish';
+    } catch {
+      return 'hinglish';
+    }
+  });
+  const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xlarge'>(() => {
+    try {
+      return (localStorage.getItem('sys_design_font') as 'normal' | 'large' | 'xlarge') || 'large';
+    } catch {
+      return 'large';
+    }
+  });
+  const [jargonModalOpen, setJargonModalOpen] = useState(false);
+  const [jargonSearchTerm, setJargonSearchTerm] = useState('');
+
+  const hinglishGuide = getHinglishGuideForChapter(chapter);
+
+  // Dynamic text size class for high readability
+  const bodyTextClass = fontSize === 'xlarge'
+    ? 'text-base sm:text-lg leading-loose text-[#f8fafc]'
+    : fontSize === 'large'
+      ? 'text-sm sm:text-base leading-relaxed text-[#f1f5f9]'
+      : 'text-xs sm:text-sm leading-relaxed text-[#e2e8f0]';
+
   const visualAsset = CHAPTER_IMAGES[chapter.id];
 
   const toggleAnswer = (id: string) => {
@@ -89,6 +119,112 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
         onToggleComplete={onToggleComplete}
         onSelectChapter={onSelectChapter}
         onSelectNextChapter={onSelectNextChapter}
+      />
+
+      {/* Reading & Language Comfort Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#d4af37]/40 bg-[#12141e] p-3 sm:p-4 shadow-md">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] uppercase tracking-wider text-[#94a3b8] font-semibold flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
+            Reading Mode:
+          </span>
+          <div className="flex rounded-sm bg-[#0a0b0f] p-0.5 border border-[#232738]">
+            <button
+              onClick={() => {
+                setLanguageMode('hinglish');
+                try { localStorage.setItem('sys_design_lang', 'hinglish'); } catch {}
+              }}
+              className={`px-3 py-1.5 rounded-xs text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                languageMode === 'hinglish'
+                  ? 'bg-[#d4af37] text-[#0b0c10] font-bold shadow-xs'
+                  : 'text-[#94a3b8] hover:text-white'
+              }`}
+            >
+              <span>🗣️ आसान भाषा (Hinglish / Desi)</span>
+            </button>
+            <button
+              onClick={() => {
+                setLanguageMode('english');
+                try { localStorage.setItem('sys_design_lang', 'english'); } catch {}
+              }}
+              className={`px-3 py-1.5 rounded-xs text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                languageMode === 'english'
+                  ? 'bg-[#1e2235] text-white font-bold shadow-xs'
+                  : 'text-[#94a3b8] hover:text-white'
+              }`}
+            >
+              <span>🏛️ Staff English</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Text Size Switcher */}
+          <div className="flex items-center gap-1.5 text-xs text-[#94a3b8]">
+            <span className="text-[11px] uppercase tracking-wider font-semibold">Text Size:</span>
+            <div className="flex rounded-sm bg-[#0a0b0f] p-0.5 border border-[#232738]">
+              <button
+                onClick={() => {
+                  setFontSize('normal');
+                  try { localStorage.setItem('sys_design_font', 'normal'); } catch {}
+                }}
+                className={`px-2.5 py-1 rounded-xs text-xs font-mono cursor-pointer transition-all ${
+                  fontSize === 'normal' ? 'bg-[#d4af37] text-[#0b0c10] font-bold' : 'text-[#94a3b8] hover:text-white'
+                }`}
+                title="Standard Text Size"
+              >
+                A-
+              </button>
+              <button
+                onClick={() => {
+                  setFontSize('large');
+                  try { localStorage.setItem('sys_design_font', 'large'); } catch {}
+                }}
+                className={`px-2.5 py-1 rounded-xs text-xs font-mono cursor-pointer transition-all ${
+                  fontSize === 'large' ? 'bg-[#d4af37] text-[#0b0c10] font-bold' : 'text-[#94a3b8] hover:text-white'
+                }`}
+                title="Comfortable Reading Size"
+              >
+                A
+              </button>
+              <button
+                onClick={() => {
+                  setFontSize('xlarge');
+                  try { localStorage.setItem('sys_design_font', 'xlarge'); } catch {}
+                }}
+                className={`px-2.5 py-1 rounded-xs text-xs font-mono font-bold cursor-pointer transition-all ${
+                  fontSize === 'xlarge' ? 'bg-[#d4af37] text-[#0b0c10] font-bold' : 'text-[#94a3b8] hover:text-white'
+                }`}
+                title="Extra Large Readable Size"
+              >
+                A+
+              </button>
+            </div>
+          </div>
+
+          {/* Jargon Buster Button */}
+          <button
+            onClick={() => {
+              setJargonSearchTerm('');
+              setJargonModalOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-sm border border-[#38bdf8]/40 bg-[#0e1d2c] px-3 py-1.5 text-xs font-medium text-[#38bdf8] hover:bg-[#152a40] transition-colors cursor-pointer"
+            title="Open Jargon Buster Dictionary"
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+            <span>Jargon Buster (कठिन शब्द)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Prominent Hinglish / Desi Chapter Summary Card */}
+      <HinglishChapterCard
+        guide={hinglishGuide}
+        onOpenJargonBuster={(term) => {
+          setJargonSearchTerm(term || '');
+          setJargonModalOpen(true);
+        }}
+        isHinglishDefault={languageMode === 'hinglish'}
       />
 
       {/* Chapter Thematic Architecture Photography & Hardware Context */}
@@ -374,14 +510,71 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               </div>
             </div>
 
+            {/* Aasan Bhasha Mein Samjho (Desi Analogy & Simplified Core Card) */}
+            {(() => {
+              const conceptDesi = hinglishGuide.conceptHinglish?.[currentConcept.title];
+              return (
+                <div className="rounded-md border-2 border-[#d4af37]/60 bg-gradient-to-r from-[#17150e] via-[#14151e] to-[#0f1118] p-4 sm:p-6 shadow-lg space-y-3.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#d4af37]/30 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase font-mono tracking-widest font-bold px-2 py-0.5 rounded-full bg-[#d4af37] text-[#0b0c10]">
+                        आसान भाषा में समझो
+                      </span>
+                      <h4 className="text-sm sm:text-base font-semibold text-[#fde047]">
+                        {conceptDesi?.aasanTitle || `${currentConcept.title} — Desi Funda`}
+                      </h4>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const firstWord = currentConcept.title.split(' ')[0].replace(/[^a-zA-Z]/g, '');
+                        setJargonSearchTerm(firstWord);
+                        setJargonModalOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1 text-xs text-[#38bdf8] hover:text-white bg-[#0e1d2c] border border-[#38bdf8]/40 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
+                      title="Check plain Hindi definition in Jargon Buster"
+                    >
+                      <HelpCircle className="h-3 w-3" />
+                      <span>Jargon Buster ↗</span>
+                    </button>
+                  </div>
+
+                  {/* Simple Hindi / Desi Explanation */}
+                  <div>
+                    <p className={bodyTextClass}>
+                      <strong className="text-[#4ade80] font-semibold">सीधा मतलब: </strong>
+                      {conceptDesi?.simpleExplanation || currentConcept.simpleDefinition}
+                    </p>
+                  </div>
+
+                  {/* Real-Life Desi Analogy Box */}
+                  <div className="rounded-sm border-l-3 border-[#d4af37] bg-[#1a1710] p-3.5 sm:p-4 text-[#f1f5f9]">
+                    <div className="text-[10px] uppercase tracking-wider text-[#d4af37] font-semibold mb-1 flex items-center gap-1.5">
+                      <Lightbulb className="h-3.5 w-3.5 text-[#d4af37]" />
+                      🇮🇳 Real-Life Desi Analogy (Daily Life Example):
+                    </div>
+                    <p className={`${bodyTextClass} italic`}>
+                      "{conceptDesi?.desiExample || currentConcept.analogy}"
+                    </p>
+                  </div>
+
+                  {conceptDesi?.proTip && (
+                    <div className="text-xs text-[#cbd5e1] flex items-start gap-2 bg-[#121420] border border-[#232738] p-2.5 rounded-xs">
+                      <span className="text-[#f59e0b] font-bold shrink-0">⭐ Interview Tip:</span>
+                      <span>{conceptDesi.proTip}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
             {/* Simple Definition & Why it Exists */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-sm border border-[#232634] bg-[#161823] p-4 sm:p-5">
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37]">
                   <Lightbulb className="h-3.5 w-3.5 text-[#d4af37]" />
-                  Core Definition
+                  Core Definition (English)
                 </div>
-                <p className="mt-2.5 text-xs sm:text-sm text-[#e2e8f0] leading-relaxed">
+                <p className={`mt-2.5 ${bodyTextClass}`}>
                   {currentConcept.simpleDefinition}
                 </p>
               </div>
@@ -391,7 +584,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
                   <ShieldCheck className="h-3.5 w-3.5 text-[#d4af37]" />
                   Why It Exists in Architecture
                 </div>
-                <p className="mt-2.5 text-xs sm:text-sm text-[#e2e8f0] leading-relaxed">
+                <p className={`mt-2.5 ${bodyTextClass}`}>
                   {currentConcept.whyItExists}
                 </p>
               </div>
@@ -403,7 +596,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               <div className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-semibold mb-2">
                 Physical World Analogy
               </div>
-              <p className="text-xs sm:text-base font-serif italic text-[#cbd5e1] leading-relaxed">
+              <p className={`font-serif italic leading-relaxed ${bodyTextClass}`}>
                 "{currentConcept.analogy}"
               </p>
             </div>
@@ -420,17 +613,17 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               <h4 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] mb-3">
                 Mechanistic Explanation &amp; Technical Execution
               </h4>
-              <p className="text-xs sm:text-sm text-[#cbd5e1] leading-relaxed whitespace-pre-line">
+              <p className={`${bodyTextClass} whitespace-pre-line`}>
                 {currentConcept.technicalExplanation}
               </p>
             </div>
 
             {/* Production Example */}
-            <div className="rounded-sm border border-[#232634] bg-[#161823] p-4 sm:p-5 text-xs sm:text-sm text-[#e2e8f0]">
+            <div className="rounded-sm border border-[#232634] bg-[#161823] p-4 sm:p-5">
               <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#d4af37] mr-2 block sm:inline mb-1 sm:mb-0">
                 Production Case:
               </span>
-              <span>{currentConcept.example}</span>
+              <span className={bodyTextClass}>{currentConcept.example}</span>
             </div>
 
             {/* When to Use vs When Not to Use */}
@@ -796,6 +989,13 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
           </button>
         </div>
       )}
+
+      {/* Jargon Buster Plain Hindi Dictionary Modal */}
+      <JargonBusterModal
+        isOpen={jargonModalOpen}
+        onClose={() => setJargonModalOpen(false)}
+        initialTerm={jargonSearchTerm}
+      />
     </div>
   );
 };

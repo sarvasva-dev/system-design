@@ -191,6 +191,19 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline uppercase text-[10px] tracking-wider text-[#64748b]">Read</span>
           </div>
 
+          {/* आसान भाषा / Jargon Buster Quick Switch Pill */}
+          <button
+            id="btn-header-hinglish-badge"
+            onClick={() => {
+              setActiveTab('chapters');
+            }}
+            title="आसान भाषा में समझो (Hinglish Mode & 3 Golden Rules are Active)"
+            className="hidden md:inline-flex items-center gap-1.5 rounded-sm border border-[#d4af37]/60 bg-[#1a1710] px-2.5 py-1.5 text-xs font-semibold text-[#fde047] hover:bg-[#282215] transition-all cursor-pointer min-h-[36px]"
+          >
+            <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse shrink-0" />
+            <span>आसान भाषा (Hinglish)</span>
+          </button>
+
           {/* Theme Selector Toggle */}
           <ThemeToggle
             currentTheme={currentTheme}
@@ -387,6 +400,30 @@ export const Header: React.FC<HeaderProps> = ({
                 <ChevronRight className="h-4 w-4 text-[#d4af37]" />
               </button>
             )}
+
+            {/* Mobile Aasan Bhasha (Hinglish) Guide Option */}
+            <button
+              onClick={() => {
+                setActiveTab('chapters');
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-between p-3.5 rounded-sm border border-[#d4af37]/60 bg-[#191610] text-[#cbd5e1] hover:border-[#d4af37] text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-sm border border-[#d4af37]/40 bg-[#282110] text-[#fde047]">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="font-serif text-base font-medium text-[#ffffff]">
+                    🗣️ आसान भाषा (Hinglish Mode)
+                  </div>
+                  <div className="text-[11px] text-[#cbd5e1]">
+                    Desi analogies &amp; Jargon Buster dictionary
+                  </div>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-[#d4af37]" />
+            </button>
 
             {/* Mobile Live AI Research Option */}
             {onOpenResearchModal && (
