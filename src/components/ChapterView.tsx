@@ -6,9 +6,9 @@ import { ChapterDiagramDispatcher } from './diagrams/ChapterDiagramDispatcher';
 import { ConceptArchitectureVisualizer } from './diagrams/ConceptArchitectureVisualizer';
 import { SyllabusRoadmapBar } from './SyllabusRoadmapBar';
 import { FlowAnimator } from './FlowAnimator';
-import { HinglishChapterCard } from './HinglishChapterCard';
+import { EasyExplainNotesCard } from './EasyExplainNotesCard';
 import { JargonBusterModal } from './JargonBusterModal';
-import { getHinglishGuideForChapter } from '../data/hinglish_guides';
+import { getEasyExplainGuideForChapter } from '../data/easy_explain_guides';
 import { 
   CheckCircle2, 
   Circle, 
@@ -61,12 +61,12 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
   const [diagramMode, setDiagramMode] = useState<'visual' | 'animated' | 'ascii'>('visual');
 
-  // Reading Comfort & Language State
-  const [languageMode, setLanguageMode] = useState<'hinglish' | 'english'>(() => {
+  // Reading Comfort & Notes Style State
+  const [notesStyle, setNotesStyle] = useState<'easy' | 'professional'>(() => {
     try {
-      return (localStorage.getItem('sys_design_lang') as 'hinglish' | 'english') || 'hinglish';
+      return (localStorage.getItem('sys_design_notes_style') as 'easy' | 'professional') || 'easy';
     } catch {
-      return 'hinglish';
+      return 'easy';
     }
   });
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xlarge'>(() => {
@@ -79,7 +79,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
   const [jargonModalOpen, setJargonModalOpen] = useState(false);
   const [jargonSearchTerm, setJargonSearchTerm] = useState('');
 
-  const hinglishGuide = getHinglishGuideForChapter(chapter);
+  const easyGuide = getEasyExplainGuideForChapter(chapter);
 
   // Dynamic text size class for high readability
   const bodyTextClass = fontSize === 'xlarge'
@@ -121,39 +121,39 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
         onSelectNextChapter={onSelectNextChapter}
       />
 
-      {/* Reading & Language Comfort Bar */}
+      {/* Reading & Comprehension Comfort Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#d4af37]/40 bg-[#12141e] p-3 sm:p-4 shadow-md">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-[11px] uppercase tracking-wider text-[#94a3b8] font-semibold flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
-            Reading Mode:
+            Reading Depth:
           </span>
           <div className="flex rounded-sm bg-[#0a0b0f] p-0.5 border border-[#232738]">
             <button
               onClick={() => {
-                setLanguageMode('hinglish');
-                try { localStorage.setItem('sys_design_lang', 'hinglish'); } catch {}
+                setNotesStyle('easy');
+                try { localStorage.setItem('sys_design_notes_style', 'easy'); } catch {}
               }}
               className={`px-3 py-1.5 rounded-xs text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-                languageMode === 'hinglish'
+                notesStyle === 'easy'
                   ? 'bg-[#d4af37] text-[#0b0c10] font-bold shadow-xs'
                   : 'text-[#94a3b8] hover:text-white'
               }`}
             >
-              <span>🗣️ आसान भाषा (Hinglish / Desi)</span>
+              <span>💡 Easy Explain Notes (Plain English)</span>
             </button>
             <button
               onClick={() => {
-                setLanguageMode('english');
-                try { localStorage.setItem('sys_design_lang', 'english'); } catch {}
+                setNotesStyle('professional');
+                try { localStorage.setItem('sys_design_notes_style', 'professional'); } catch {}
               }}
               className={`px-3 py-1.5 rounded-xs text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-                languageMode === 'english'
+                notesStyle === 'professional'
                   ? 'bg-[#1e2235] text-white font-bold shadow-xs'
                   : 'text-[#94a3b8] hover:text-white'
               }`}
             >
-              <span>🏛️ Staff English</span>
+              <span>🏛️ Professional Architecture Deep Dive</span>
             </button>
           </div>
         </div>
@@ -208,23 +208,23 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               setJargonSearchTerm('');
               setJargonModalOpen(true);
             }}
-            className="inline-flex items-center gap-1.5 rounded-sm border border-[#38bdf8]/40 bg-[#0e1d2c] px-3 py-1.5 text-xs font-medium text-[#38bdf8] hover:bg-[#152a40] transition-colors cursor-pointer"
-            title="Open Jargon Buster Dictionary"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-[#38bdf8]/40 bg-[#0e1d2c] px-3 py-1.5 text-xs font-medium text-[#38bdf8] hover:bg-[#152a40] hover:text-white transition-colors cursor-pointer"
+            title="Open Architecture Jargon Buster"
           >
             <HelpCircle className="h-3.5 w-3.5" />
-            <span>Jargon Buster (कठिन शब्द)</span>
+            <span>Jargon Buster</span>
           </button>
         </div>
       </div>
 
-      {/* Prominent Hinglish / Desi Chapter Summary Card */}
-      <HinglishChapterCard
-        guide={hinglishGuide}
+      {/* Prominent Easy Explain Notes & Mental Models Card */}
+      <EasyExplainNotesCard
+        guide={easyGuide}
         onOpenJargonBuster={(term) => {
           setJargonSearchTerm(term || '');
           setJargonModalOpen(true);
         }}
-        isHinglishDefault={languageMode === 'hinglish'}
+        defaultExpanded={notesStyle === 'easy'}
       />
 
       {/* Chapter Thematic Architecture Photography & Hardware Context */}
@@ -510,18 +510,18 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
               </div>
             </div>
 
-            {/* Aasan Bhasha Mein Samjho (Desi Analogy & Simplified Core Card) */}
+            {/* Plain English Breakdown & Mental Model Card */}
             {(() => {
-              const conceptDesi = hinglishGuide.conceptHinglish?.[currentConcept.title];
+              const conceptNote = easyGuide.conceptNotes?.[currentConcept.title];
               return (
-                <div className="rounded-md border-2 border-[#d4af37]/60 bg-gradient-to-r from-[#17150e] via-[#14151e] to-[#0f1118] p-4 sm:p-6 shadow-lg space-y-3.5">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#d4af37]/30 pb-3">
+                <div className="rounded-md border border-[#d4af37]/50 bg-gradient-to-r from-[#161826] via-[#12141f] to-[#0c0e16] p-4 sm:p-6 shadow-lg space-y-3.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#24293d] pb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] uppercase font-mono tracking-widest font-bold px-2 py-0.5 rounded-full bg-[#d4af37] text-[#0b0c10]">
-                        आसान भाषा में समझो
+                        Plain English Notes
                       </span>
                       <h4 className="text-sm sm:text-base font-semibold text-[#fde047]">
-                        {conceptDesi?.aasanTitle || `${currentConcept.title} — Desi Funda`}
+                        {conceptNote?.plainTitle || `${currentConcept.title} — Intuitive Mental Model`}
                       </h4>
                     </div>
                     <button
@@ -531,36 +531,36 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
                         setJargonModalOpen(true);
                       }}
                       className="inline-flex items-center gap-1 text-xs text-[#38bdf8] hover:text-white bg-[#0e1d2c] border border-[#38bdf8]/40 px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
-                      title="Check plain Hindi definition in Jargon Buster"
+                      title="Look up term in Plain English Jargon Buster"
                     >
                       <HelpCircle className="h-3 w-3" />
                       <span>Jargon Buster ↗</span>
                     </button>
                   </div>
 
-                  {/* Simple Hindi / Desi Explanation */}
+                  {/* Plain English Core Concept */}
                   <div>
                     <p className={bodyTextClass}>
-                      <strong className="text-[#4ade80] font-semibold">सीधा मतलब: </strong>
-                      {conceptDesi?.simpleExplanation || currentConcept.simpleDefinition}
+                      <strong className="text-[#4ade80] font-semibold">In Plain English: </strong>
+                      {conceptNote?.plainEnglishExplanation || currentConcept.simpleDefinition}
                     </p>
                   </div>
 
-                  {/* Real-Life Desi Analogy Box */}
-                  <div className="rounded-sm border-l-3 border-[#d4af37] bg-[#1a1710] p-3.5 sm:p-4 text-[#f1f5f9]">
-                    <div className="text-[10px] uppercase tracking-wider text-[#d4af37] font-semibold mb-1 flex items-center gap-1.5">
-                      <Lightbulb className="h-3.5 w-3.5 text-[#d4af37]" />
-                      🇮🇳 Real-Life Desi Analogy (Daily Life Example):
+                  {/* Everyday Real-World Analogy */}
+                  <div className="rounded-sm border-l-3 border-[#38bdf8] bg-[#0f1422] p-3.5 sm:p-4 text-[#f1f5f9]">
+                    <div className="text-[10px] uppercase tracking-wider text-[#38bdf8] font-semibold mb-1 flex items-center gap-1.5">
+                      <Lightbulb className="h-3.5 w-3.5 text-[#38bdf8]" />
+                      Real-World Everyday Analogy:
                     </div>
                     <p className={`${bodyTextClass} italic`}>
-                      "{conceptDesi?.desiExample || currentConcept.analogy}"
+                      "{conceptNote?.everydayAnalogy || currentConcept.analogy}"
                     </p>
                   </div>
 
-                  {conceptDesi?.proTip && (
-                    <div className="text-xs text-[#cbd5e1] flex items-start gap-2 bg-[#121420] border border-[#232738] p-2.5 rounded-xs">
-                      <span className="text-[#f59e0b] font-bold shrink-0">⭐ Interview Tip:</span>
-                      <span>{conceptDesi.proTip}</span>
+                  {conceptNote?.interviewTakeaway && (
+                    <div className="text-xs text-[#cbd5e1] flex items-start gap-2 bg-[#141724] border border-[#272c42] p-2.5 rounded-xs">
+                      <span className="text-[#f59e0b] font-bold shrink-0">🎯 Interview Takeaway:</span>
+                      <span>{conceptNote.interviewTakeaway}</span>
                     </div>
                   )}
                 </div>

@@ -191,17 +191,17 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline uppercase text-[10px] tracking-wider text-[#64748b]">Read</span>
           </div>
 
-          {/* आसान भाषा / Jargon Buster Quick Switch Pill */}
+          {/* Easy Explain Notes / Plain English Quick Pill */}
           <button
-            id="btn-header-hinglish-badge"
+            id="btn-header-easy-notes-badge"
             onClick={() => {
               setActiveTab('chapters');
             }}
-            title="आसान भाषा में समझो (Hinglish Mode & 3 Golden Rules are Active)"
+            title="Easy Explain Notes & Intuitive Mental Models"
             className="hidden md:inline-flex items-center gap-1.5 rounded-sm border border-[#d4af37]/60 bg-[#1a1710] px-2.5 py-1.5 text-xs font-semibold text-[#fde047] hover:bg-[#282215] transition-all cursor-pointer min-h-[36px]"
           >
             <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse shrink-0" />
-            <span>आसान भाषा (Hinglish)</span>
+            <span>Easy Explain Notes</span>
           </button>
 
           {/* Theme Selector Toggle */}
@@ -401,7 +401,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Mobile Aasan Bhasha (Hinglish) Guide Option */}
+            {/* Mobile Easy Explain Notes Option */}
             <button
               onClick={() => {
                 setActiveTab('chapters');
@@ -415,10 +415,10 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
                 <div>
                   <div className="font-serif text-base font-medium text-[#ffffff]">
-                    🗣️ आसान भाषा (Hinglish Mode)
+                    💡 Easy Explain Notes (Plain English)
                   </div>
                   <div className="text-[11px] text-[#cbd5e1]">
-                    Desi analogies &amp; Jargon Buster dictionary
+                    Mental models, analogies &amp; Jargon Buster
                   </div>
                 </div>
               </div>
